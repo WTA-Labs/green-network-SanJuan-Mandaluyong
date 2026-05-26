@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecological Green Network</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+#home{position:absolute;inset:0;z-index:200;display:flex;transition:opacity .7s}
+#home.fade-out{opacity:0;pointer-events:none}
+#home-left{width:46%;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:60px 60px;background:linear-gradient(to right,#fff 0%,#fff 45%,rgba(255,255,255,0.5) 70%,rgba(255,255,255,0) 100%);overflow:hidden;transition:opacity 0.4s ease}
+#home-left::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,0.05) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
+#home-right{flex:1;position:relative;z-index:1}
+#home-right-fade{position:absolute;inset:0;background:linear-gradient(to right,rgba(240,246,244,0.10) 0%,transparent 40%);pointer-events:none;z-index:2}
+
+#home-logo-top{height:80px;object-fit:contain;margin-bottom:22px;margin-top:-100px;opacity:0.92;align-self:flex-start}
+
+.h-title{font-family:'Inter',sans-serif;font-size:3.6rem;font-weight:700;color:var(--tx1);line-height:1.08;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:12px}
+.h-title em{color:var(--acc);font-style:normal}
+.h-location{font-size:1.25rem;color:var(--tx2);margin-bottom:6px;letter-spacing:.03em;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.h-study{display:flex;align-items:center;gap:7px;margin-bottom:46px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.85rem;color:var(--tx2);letter-spacing:.05em}
+.h-logo{height:18px;object-fit:contain;vertical-align:middle;opacity:.75}
+#enter-btn{display:inline-flex;align-items:center;gap:11px;padding:16px 38px;background:var(--acc);color:#fff;border:none;border-radius:50px;font-size:1rem;font-weight:600;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;box-shadow:0 4px 24px rgba(26,158,110,0.38);transition:all .22s;letter-spacing:.02em;width:fit-content}
+#enter-btn:hover{background:#0d7a53;transform:translateY(-2px);box-shadow:0 6px 32px rgba(26,158,110,0.52)}
+#enter-btn svg{width:17px;height:17px;flex-shrink:0}
+
+#top-nav{position:absolute;top:14px;left:14px;right:14px;z-index:10;display:flex;align-items:center;justify-content:center;gap:10px}
+#toggle-group{display:flex;flex-direction:row;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;box-shadow:var(--shadow);pointer-events:all}
+.tgl-row{display:flex;align-items:center;gap:9px}
+.tgl-label{font-size:.73rem;font-weight:500;color:var(--tx1);white-space:nowrap;user-select:none;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.sw{position:relative;display:inline-block;width:34px;height:19px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sl{position:absolute;inset:0;border-radius:19px;background:#c8d0d8;cursor:pointer;transition:background .18s}
+.sl::before{content:'';position:absolute;width:13px;height:13px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw input:checked+.sl{background:var(--acc)}
+.sw input:checked+.sl::before{transform:translateX(15px)}
+#scale-bar{display:flex;gap:5px;background:var(--panel);border:1px solid var(--border);border-radius:50px;padding:5px 7px;box-shadow:var(--shadow);pointer-events:all}
+.sbtn{padding:7px 15px;border-radius:50px;border:1px solid transparent;background:transparent;cursor:pointer;font-size:.77rem;font-weight:500;color:var(--tx2);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .2s;white-space:nowrap}
+.sbtn:hover{background:var(--hover);color:var(--tx1);border-color:var(--border-a)}
+.sbtn.active{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600}
+#brgy-bar{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:50px;padding:5px 14px;box-shadow:var(--shadow);pointer-events:all}
+.brgy-lbl{font-family:'Space Mono',monospace;font-size:.56rem;color:var(--tx2);letter-spacing:.07em;white-space:nowrap}
+.brgy-sel{border:none;background:transparent;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.77rem;color:var(--tx1);cursor:pointer;outline:none;min-width:175px;max-width:220px}
+:root{--font-sans:'Helvetica Neue',Helvetica,Arial,sans-serif;--font-title:'Inter',sans-serif;
+  --acc:#1a9e6e;--acc-l:rgba(26,158,110,0.10);--acc-d:rgba(26,158,110,0.55);
+  --panel:rgba(255,255,255,0.97);--panel-d:rgb(237,235,235);
+  --border:rgba(0,0,0,0.19);--border-a:rgba(26,158,110,0.35);
+  --tx1:#000000;--tx2:rgb(89,89,89);--tx3:rgb(40,38,38);
+  --hover:rgba(26,158,110,0.06);--r:10px;
+  --shadow:0 4px 22px rgba(0,0,0,0.20),0 1px 6px rgba(0,0,0,0.12);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;background:#e8ecf0;color:var(--tx1);height:100vh;overflow:hidden}
+#map{position:absolute;inset:0;z-index:1}
+
+/* HOME */
+
+
+
+
+
+
+
+
+
+
+.h-title em{color:var(--acc);font-style:normal}
+
+
+
+
+
+
+
+
+/* ZOOM FADE */
+#zoom-fade{position:absolute;inset:0;z-index:5;background:#fff;opacity:0;pointer-events:none;transition:opacity .3s}
+
+/* LOADER */
+#loader{position:absolute;inset:0;z-index:300;background:#f5f7f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
+#loader.out{opacity:0;pointer-events:none}
+.spin{width:40px;height:40px;border:3px solid rgba(26,158,110,.15);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loader-msg{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--acc-d);letter-spacing:.1em;text-transform:uppercase}
+
+/* Q-TIP */
+#q-tip{position:fixed;z-index:9999;display:none;pointer-events:none;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:8px 11px;font-size:.71rem;color:var(--tx2);line-height:1.6;max-width:220px;box-shadow:0 4px 20px rgba(0,0,0,.14)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.psec{padding:11px 13px;border-bottom:1px solid var(--border)}.psec:last-child{border-bottom:none}
+.plabel{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+
+/* TOP NAV */
+
+#top-nav>*{pointer-events:all}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* LEFT */
+#left-col{position:absolute;top:77px;left:14px;width:252px;z-index:10;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
+#left-col::-webkit-scrollbar{width:3px}#left-col::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:2px}
+.map-eyebrow{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
+.map-title{font-family:'Space Mono',monospace;font-size:1.02rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--tx1);line-height:1.2;margin-bottom:4px}
+.map-subtitle{font-size:.86rem;font-weight:600;color:var(--tx3);margin-bottom:8px}
+.map-desc{font-size:.72rem;color:var(--tx2);line-height:1.6}
+.map-desc a{color:var(--acc);text-decoration:none}.map-desc a:hover{text-decoration:underline}
+.city-card{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:none}
+.city-title{font-family:'Space Mono',monospace;font-size:.67rem;font-weight:700;color:var(--tx1);margin-bottom:7px}
+.city-img{width:100%;height:86px;object-fit:cover;border-radius:6px;margin-bottom:8px;display:block}
+.city-row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(0,0,0,.04);font-size:.7rem}.city-row:last-of-type{border:none}
+.ck{color:var(--tx2)}.cv{color:var(--tx1);font-weight:600;font-family:'Space Mono',monospace;font-size:.64rem}
+.city-note{margin-top:5px;font-size:.68rem;color:var(--tx2);line-height:1.55}
+.sd-title{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;color:var(--tx1);margin-bottom:6px}
+.sd-body{font-size:.71rem;color:var(--tx2);line-height:1.6}
+.hlyr-btn{display:flex;align-items:center;gap:7px;width:100%;padding:6px 9px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:.76rem;color:var(--tx2);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;margin-bottom:4px;transition:all .15s;text-align:left}
+.hlyr-btn:hover{border-color:var(--border-a);background:var(--hover);color:var(--tx1)}.hlyr-btn.active{border-color:var(--acc);background:var(--acc-l);color:var(--tx1);font-weight:600}
+.ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* RIGHT */
+#right-col{position:absolute;top:77px;right:14px;width:268px;z-index:10;display:flex;flex-direction:column;max-height:calc(100vh - 120px)}
+#rp{display:flex;flex-direction:column;overflow:hidden;flex:1;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);background:var(--panel)}
+#rp-top{padding:10px 13px 7px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel-d)}
+.rp-ey{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:2px}
+.rp-mt{font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;text-transform:uppercase;color:var(--tx1)}
+#rp-ldesc{background:#f3f8f6;border-bottom:1px solid rgba(26,158,110,.12);padding:8px 13px;display:none;flex-shrink:0}
+.rp-ll{font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:3px}
+.rp-lb{font-size:.7rem;color:var(--tx2);line-height:1.55}
+#rp-hdr{padding:9px 13px;border-bottom:1px solid var(--border);flex-shrink:0}
+.rp-badge{display:inline-block;font-family:'Space Mono',monospace;font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);background:var(--acc-l);border:1px solid var(--border-a);border-radius:4px;padding:2px 6px;margin-bottom:4px}
+#rp-name{font-size:.85rem;font-weight:700;color:var(--tx1);line-height:1.3;word-break:break-word}
+#rp-hint{padding:18px 13px;text-align:center;font-size:.75rem;color:var(--tx2);line-height:1.7;flex-shrink:0}
+#rp-hint strong{color:var(--tx1)}
+#rp-body{display:none;overflow-y:auto;flex:1}
+#rp-body::-webkit-scrollbar{width:3px}#rp-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.09);border-radius:2px}
+.sec-hdr{padding:5px 13px 4px;font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);background:var(--panel-d);border-bottom:1px solid var(--border);border-top:1px solid var(--border)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:9px 11px;border-bottom:1px solid var(--border)}
+.stat-box{background:var(--panel-d);border-radius:7px;padding:7px 9px;border:1px solid var(--border)}
+.stat-val{font-size:.9rem;font-weight:700;color:var(--tx1);font-family:'Space Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-key{font-size:.59rem;color:var(--tx2);margin-top:2px;line-height:1.3}
+.chart-wrap{padding:9px 13px;border-bottom:1px solid var(--border)}
+.chart-ttl{font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.chart-labs{display:flex;justify-content:space-between;font-size:.58rem;color:var(--tx2);margin-top:2px;font-family:'Space Mono',monospace}
+.chart-cur{font-size:.68rem;color:var(--tx3);margin-top:3px}.chart-cur strong{color:var(--acc)}
+.props-wrap{padding:3px 0 4px}
+.prop-row{display:flex;align-items:flex-start;gap:4px;padding:4px 13px;border-bottom:1px solid rgba(0,0,0,.04)}.prop-row:last-child{border-bottom:none}
+.pk{font-size:.68rem;color:var(--tx2);flex:0 0 auto;max-width:116px;word-break:break-word;line-height:1.4}
+.pv{font-size:.72rem;color:var(--tx1);font-weight:500;text-align:right;flex:1;word-break:break-word;line-height:1.4}.pv.hi{color:var(--acc);font-weight:700}
+.qm{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--acc-l);border:1px solid rgba(26,158,110,.25);font-size:.56rem;color:var(--acc);cursor:help;font-family:'Space Mono',monospace;font-weight:700;flex-shrink:0;margin-top:1px}
+.def-box{margin:8px 13px;padding:9px 11px;background:#f6faf8;border:1px solid rgba(26,158,110,.18);border-radius:7px;font-size:.71rem;color:var(--tx2);line-height:1.6}
+.def-title{font-weight:700;color:var(--tx1);margin-bottom:4px;font-size:.74rem}
+.def-imp{margin-top:5px;padding-top:5px;border-top:1px solid rgba(26,158,110,.15)}
+.def-imp-lbl{font-weight:600;color:var(--acc);font-size:.63rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.coll-btn{width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:7px 13px;font-size:.71rem;color:var(--tx2);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;border-top:1px solid var(--border)}
+.coll-btn:hover{background:var(--hover);color:var(--tx1)}
+.coll-body{padding:8px 13px;font-size:.7rem;color:var(--tx2);line-height:1.6;background:#f6faf8;border-top:1px solid rgba(26,158,110,.1)}
+.coll-body.hidden{display:none}
+
+/* BOTTOM */
+#bottom-center{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);z-index:10}
+#lgnd-body{display:flex;flex-direction:row;flex-wrap:wrap}
+.lgnd-sec{padding:8px 11px;border-right:1px solid var(--border)}.lgnd-sec:last-child{border-right:none}
+.lgnd-lbl{font-family:'Space Mono',monospace;font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:5px;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.lgnd-row{display:flex;align-items:center;gap:7px;margin-bottom:3px;font-size:.7rem;color:var(--tx3);white-space:nowrap}.lgnd-row:last-child{margin-bottom:0}
+.lgnd-tgl{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:5px;cursor:pointer;margin-bottom:2px;font-size:.7rem;color:var(--tx3);user-select:none;transition:background .15s;white-space:nowrap}
+.lgnd-tgl:hover{background:var(--hover)}.lgnd-tgl.off{opacity:.35}
+.lgnd-tgl input[type=checkbox]{accent-color:var(--acc);cursor:pointer;flex-shrink:0;pointer-events:none}
+.ls{width:10px;height:10px;border-radius:2px;flex-shrink:0;border:1px solid rgba(0,0,0,.07)}
+.lsl{width:18px;height:4px;border-radius:2px;flex-shrink:0}
+.lsc{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.grad-bar{height:9px;border-radius:3px;margin-bottom:3px;border:1px solid rgba(0,0,0,.07)}
+.grad-labs{display:flex;justify-content:space-between;font-size:.58rem;color:var(--tx2);font-family:'Space Mono',monospace}
+#coord-ov{position:absolute;bottom:14px;right:14px;z-index:10;background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-family:'Space Mono',monospace;font-size:.56rem;color:var(--tx2)}
+#logo-bl{position:absolute;bottom:14px;left:14px;z-index:10;height:30px;object-fit:contain;opacity:.7}
+#tip{position:absolute;z-index:50;pointer-events:none;display:none}
+.tip-box{background:rgba(255,255,255,.97);border:1px solid var(--border);border-radius:7px;padding:6px 10px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.tip-name{font-size:.77rem;font-weight:600;color:var(--tx1);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tip-sub{font-size:.63rem;color:var(--acc);margin-top:1px}
+.maplibregl-ctrl-group{background:rgba(255,255,255,.97)!important;border:1px solid var(--border)!important;box-shadow:var(--shadow)!important}
+.maplibregl-ctrl-group button{color:var(--tx2)!important}
+.maplibregl-ctrl-attrib{background:rgba(255,255,255,.88)!important;color:var(--tx2)!important;font-size:10px!important}
+/* Slide-in animations for UI panels */
+#left-col{transition:transform 0.65s cubic-bezier(0.22,1,0.36,1),opacity 0.5s ease}
+#left-col.offscreen{transform:translateX(-110%);opacity:0}
+#right-col{transition:transform 0.65s cubic-bezier(0.22,1,0.36,1),opacity 0.5s ease}
+#right-col.offscreen{transform:translateX(110%);opacity:0}
+#top-nav{transition:transform 0.55s cubic-bezier(0.22,1,0.36,1),opacity 0.45s ease}
+#top-nav.offscreen{transform:translateY(-130%);opacity:0}
+#bottom-center{transition:transform 0.6s cubic-bezier(0.22,1,0.36,1),opacity 0.5s ease}
+#bottom-center.offscreen{transform:translateY(130%);opacity:0}
+#coord-ov{transition:transform 0.6s cubic-bezier(0.22,1,0.36,1),opacity 0.5s ease}
+#coord-ov.offscreen{transform:translateX(130%);opacity:0}
+#logo-bl{transition:opacity 0.5s ease}
+#logo-bl.offscreen{opacity:0}
+/* MapLibre scale control */
+.maplibregl-ctrl-bottom-right{transition:transform 0.6s cubic-bezier(0.22,1,0.36,1),opacity 0.5s ease}
+.maplibregl-ctrl-bottom-right.offscreen{transform:translateX(130%);opacity:0}
+
+/* ── Overrides ── */
+.map-title,.sd-title,.rp-mt,.def-title,.city-title{font-family:'Inter',sans-serif!important}
+#rp-name{font-family:'Inter',sans-serif!important;font-size:1.08rem!important;font-weight:700!important}
+.stat-val{font-family:'Inter',sans-serif!important;font-size:1.1rem!important}
+.sec-hdr{background:rgb(237,235,235)!important;color:#000!important;font-size:.75rem!important}
+.rp-ey{display:none!important}
+.rp-badge{display:none!important}
+.map-eyebrow{display:none!important}
+#rp-top{background:rgb(237,235,235)!important;padding:10px 13px 8px!important}
+.rp-mt{font-size:.72rem!important;font-weight:600!important;color:rgb(89,89,89)!important;text-transform:uppercase!important;letter-spacing:.08em!important}
+.rp-ll{font-family:'Inter',sans-serif!important;font-size:1.0rem!important;font-weight:700!important;color:#000!important;margin-bottom:3px!important}
+.stat-box{background:rgb(237,235,235)!important;border:1px solid rgba(0,0,0,.12)!important;border-radius:5px!important}
+.panel{border-radius:5px!important;border:1px solid rgba(0,0,0,.19)!important;box-shadow:0 4px 22px rgba(0,0,0,.20),0 1px 6px rgba(0,0,0,.12)!important}
+#rp{border-radius:5px!important;box-shadow:0 4px 22px rgba(0,0,0,.20),0 1px 6px rgba(0,0,0,.12)!important}
+#toggle-group{border-radius:5px!important;box-shadow:0 4px 22px rgba(0,0,0,.20),0 1px 6px rgba(0,0,0,.12)!important}
+#q-tip{z-index:99999!important}
+#loader-logo{height:180px;object-fit:contain;margin-bottom:16px}
+50%{opacity:1.0}}
+#loader-msg{display:none!important}
+#home-left{transition:transform 0.42s cubic-bezier(0.22,1,0.36,1),opacity 0.35s ease!important}
+#left-col,#right-col{transition:transform 0.4s cubic-bezier(0.645,0.045,0.355,1),opacity 0.4s ease!important}
+#top-nav,#bottom-center{transition:transform 0.4s cubic-bezier(0.645,0.045,0.355,1),opacity 0.4s ease!important}
+
+#toggle-group{border-radius:50px!important}
+
+#q-tip{position:fixed!important;z-index:99999!important;max-width:220px!important}
+
+.maplibregl-ctrl-attrib,.maplibregl-ctrl-bottom-left{display:none!important}
+
+/* Scale control above lat/lng overlay */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-scale{
+  display:block;
+  margin-bottom:0;
+}
+.maplibregl-ctrl-bottom-right{
+  bottom:48px!important;
+  right:14px!important;
+}
+
+#loader-bar-wrap{width:200px;height:4px;background:rgba(26,158,110,0.15);border-radius:2px;overflow:hidden;margin-top:4px}
+#loader-bar{height:100%;width:0%;background:var(--acc);border-radius:2px;transition:width 0.25s ease}
+
+/* ─ Fonts ─ */
+body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-family:'Inter',sans-serif}
+.rp-mt,#rp-name,.sec-hdr,.def-title,.def-imp-lbl,.stat-val,.city-title,.city-stat-v,h1,h2,h3,strong{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif!important;font-weight:700!important}
+.stat-key,.pk,.pv,.prop-row *,.map-desc,.sd-body,.city-note,.coll-btn,.city-stat-k{font-family:'Inter',sans-serif!important;font-weight:400!important}
+.chart-ttl,.chart-labs,#coord-ov,.mChart *{font-family:'JetBrains Mono',monospace!important}
+
+.cv{font-family:'Inter',sans-serif!important;font-weight:600!important}
+
+.chart-ttl{font-family:'JetBrains Mono',monospace!important;font-size:.6rem!important}
+
+.rp-badge{display:none!important}
+
+/* Pulsating barangay outline on dropdown selection */
+@keyframes brgyPulse{0%,100%{opacity:0.8}50%{opacity:0.3}}
+#brgy-pulse-overlay{display:none;position:absolute;inset:0;pointer-events:none;z-index:5}
+
+#rp-badge:empty{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="home">
+  <div id="home-left">
+    <img src="wtalogo.png" id="home-logo-top" alt="WTA Labs" onerror="this.style.display='none'">
+    <div class="h-title">Ecological<br><em>Green Network</em></div>
+    <div class="h-location">San Juan and Mandaluyong</div>
+    <div class="h-study">Study by <img src="wtalogo.png" class="h-logo" alt="WTA Labs" onerror="this.style.display='none'"></div>
+    <button id="enter-btn" onclick="enterMap()">Enter Map <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+  <div id="home-right">
+    <div id="home-right-fade"></div>
+  </div>
+</div>
+<div id="zoom-fade"></div>
+<div id="loader"><img src="wtalogofull.png" id="loader-logo" alt="" onerror="this.style.display='none'"><div id="loader-bar-wrap"><div id="loader-bar"></div></div></div>
+<div id="map"></div>
+<div id="q-tip"></div>
+
+<div id="top-nav" class="offscreen">
+  <div id="toggle-group">
+    <div class="tgl-row">
+      <label class="sw"><input type="checkbox" id="tgl-cores" checked onchange="toggleCores(this.checked)"><span class="sl"></span></label>
+      <span class="tgl-label">Core Habitats</span>
+    </div>
+    <div class="tgl-row">
+      <label class="sw"><input type="checkbox" id="tgl-brgy" onchange="toggleBrgyBorder(this.checked)"><span class="sl"></span></label>
+      <span class="tgl-label">Barangay Borders</span>
+    </div>
+  </div>
+  <div id="scale-bar">
+    <button class="sbtn active" onclick="pickScale('barangay-scale',this)">Barangay Scale</button>
+    <button class="sbtn" onclick="pickScale('hex-scale',this)">Hex Grid Scale</button>
+    <button class="sbtn" onclick="pickScale('road-scale',this)">Road Scale</button>
+  </div>
+  <div id="brgy-bar">
+    <span class="brgy-lbl">Barangay</span>
+    <select class="brgy-sel" id="brgy-sel" onchange="onBrgySelect(this)">
+      <option value="">- Select -</option>
+    </select>
+  </div>
+</div>
+
+<div id="left-col" class="offscreen">
+  <div class="panel" id="lp">
+    <div class="psec">
+      <div class="map-eyebrow">Metro Manila Green Infrastructure</div>
+      <div class="map-title">Ecological Green Network</div>
+      <div class="map-subtitle">San Juan and Mandaluyong City</div>
+      <div class="map-desc">Structural and functional ecological connectivity using GuidosToolbox (MSPA), CONEFOR (network importance), and Omniscape (circuit-theory modeling). Identifies core habitats, corridors, and critical bottlenecks within the urban landscape.<br><br><a href="https://www.wtalabs.ph/greenframework" target="_blank">Read more about the research framework here</a></div>
+      <div class="city-card" id="city-card">
+        <div class="city-title" id="city-title-el"></div>
+        <img id="city-img" class="city-img" src="" alt="">
+        <div id="city-rows"></div>
+        <div class="city-note" id="city-note"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel"><div class="psec"><div class="sd-title" id="sd-title">-</div><div class="sd-body" id="sd-body"></div></div></div>
+  <div class="panel" id="hex-sub" style="display:none">
+    <div class="psec"><div class="plabel">Hex Layer</div><div id="hex-btns"></div></div>
+  </div>
+</div>
+
+<div id="right-col" class="offscreen">
+  <div id="rp">
+    <div id="rp-top"><div class="rp-mt">Properties</div></div>
+    <div id="rp-ldesc"><div class="rp-ll" id="rp-ll">Layer</div><div class="rp-lb" id="rp-lb"></div></div>
+    <div id="rp-hdr"><div class="rp-badge" id="rp-badge">-</div><div id="rp-name">Hover or click a feature</div></div>
+    <div id="rp-hint">Hover over any feature.<br><strong>Click</strong> to lock and view full statistics.</div>
+    <div id="rp-body"></div>
+  </div>
+</div>
+
+<div id="bottom-center" class="offscreen"><div class="panel" id="lgnd"><div id="lgnd-body"></div></div></div>
+<div id="coord-ov" class="offscreen">Lat/Lng: <span id="coord-val">-</span></div>
+<div id="attrib-ov" class="offscreen">© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors · © <a href="https://carto.com/attributions" target="_blank">CARTO</a></div>
+<img src="wtalogo.png" id="logo-bl" class="offscreen" alt="" onerror="this.style.display='none'">
+<div id="tip"><div class="tip-box"><div class="tip-name" id="tip-name"></div><div class="tip-sub" id="tip-sub"></div></div></div>
+
+<script>
+
+// Q-TIP
+const QT = document.getElementById('q-tip');
+document.addEventListener('mouseover', e => {
+  const q = e.target.closest('.qm');
+  if (!q) { QT.style.display = 'none'; return; }
+  QT.textContent = q.dataset.tip || '';
+  QT.style.display = 'block';
+  posQT(e.clientX, e.clientY);
+});
+document.addEventListener('mousemove', e => { if (e.target.closest('.qm')) posQT(e.clientX, e.clientY); });
+document.addEventListener('mouseout', e => { if (e.target.closest('.qm')) QT.style.display = 'none'; });
+function posQT(cx, cy) {
+  QT.style.display = 'block';
+  const rect = QT.getBoundingClientRect();
+  const tw = rect.width || 220, th = rect.height || 80;
+  const w = window.innerWidth, h = window.innerHeight;
+  const left = cx + 14 + tw > w ? cx - tw - 8 : cx + 14;
+  const top  = cy + th + 10 > h ? cy - th - 8 : cy + 16;
+  QT.style.left = Math.max(4, left) + 'px';
+  QT.style.top  = Math.max(4, top)  + 'px';
+}
+
+
+let homeVisible = true, entering = false;
+
+// HOME
+const MAP_MIN_ZOOM = 10, FADE_START = 12;
+
+function enterMap() {
+  homeVisible = false;
+  entering = true;
+  const h = document.getElementById('home');
+  const hl = document.getElementById('home-left');
+  // Fade out home-left (title + gradient) slightly ahead of the whole overlay
+  if (hl) { hl.style.transition = 'transform 0.42s cubic-bezier(0.22,1,0.36,1),opacity 0.3s ease'; hl.style.transform='translateX(-100%)'; hl.style.opacity='0'; }
+  setTimeout(() => { h.classList.add('fade-out'); }, 180);
+  setTimeout(() => { h.style.display = 'none'; }, 850);
+  document.getElementById('zoom-fade').style.opacity = 0;
+  // Slide in UI panels with staggered delays
+  setTimeout(() => document.getElementById('top-nav').classList.remove('offscreen'), 200);
+  setTimeout(() => document.getElementById('left-col').classList.remove('offscreen'), 320);
+  setTimeout(() => document.getElementById('right-col').classList.remove('offscreen'), 420);
+  setTimeout(() => document.getElementById('bottom-center').classList.remove('offscreen'), 380);
+  setTimeout(() => document.getElementById('coord-ov').classList.remove('offscreen'), 480);
+  setTimeout(() => document.getElementById('logo-bl').classList.remove('offscreen'), 480);
+  // Slide in MapLibre scale control
+  setTimeout(() => {
+    const ctrl = document.querySelector('.maplibregl-ctrl-bottom-right');
+    if (ctrl) ctrl.classList.remove('offscreen');
+  }, 480);
+  map.flyTo({ center: [121.034, 14.588], zoom: 13.5, duration: 2000, essential: true });
+  map.once('moveend', () => {
+    entering = false;
+    map.setMinZoom(MAP_MIN_ZOOM);
+    applyScale(S.scale);
+    document.getElementById('zoom-fade').style.opacity = 0;
+  });
+}
+
+function showHome() {
+  if (homeVisible || entering) return;
+  homeVisible = true;
+  // Slide all map UI panels offscreen
+  ['top-nav','left-col','right-col','bottom-center','coord-ov','logo-bl'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.classList.add('offscreen');
+  });
+  const ctrl = document.querySelector('.maplibregl-ctrl-bottom-right');
+  if (ctrl) ctrl.classList.add('offscreen');
+  // Show home overlay
+  const h = document.getElementById('home');
+  const hl = document.getElementById('home-left');
+  h.style.display = 'flex';
+  h.style.opacity = '0';
+  h.classList.remove('fade-out');
+  if (hl) { hl.style.transition = 'none'; hl.style.transform='translateX(-100%)'; hl.style.opacity='0'; }
+  requestAnimationFrame(() => {
+    h.style.opacity = '1';
+    // Fade in title panel after home appears
+    setTimeout(() => {
+      if (hl) { hl.style.transition = 'transform 0.42s cubic-bezier(0.22,1,0.36,1),opacity 0.35s ease'; hl.style.transform='translateX(0)'; hl.style.opacity='1'; }
+    }, 220);
+  });
+  document.getElementById('zoom-fade').style.opacity = 0;
+  map.setMinZoom(5);
+  map.flyTo({ center: [117, 12], zoom: 5.0, duration: 900, essential: true });
+}
+
+
+const CITY_INFO = {
+  'San Juan': {
+    title: 'About San Juan City',
+    img: 'sanjuan.jpg',
+    stats: [
+      {k:'Land Area', v:'5.94 km²'},
+      {k:'Population', v:'~122,180 (2020)'},
+      {k:'Barangays', v:'21'},
+      {k:'Pop. Density', v:'~20,570/km²'}
+    ],
+    note: 'One of the smallest yet most densely populated cities in Metro Manila. Site of the first skirmish of the Philippine Revolution in 1896. Notable for Pinaglabanan Shrine, Little Baguio, and Xavier School.'
+  },
+  'Mandaluyong': {
+    title: 'About Mandaluyong City',
+    img: 'mandaluyong.jpg',
+    stats: [
+      {k:'Land Area', v:'11.26 km²'},
+      {k:'Population', v:'~386,276 (2020)'},
+      {k:'Barangays', v:'27'},
+      {k:'Pop. Density', v:'~34,300/km²'}
+    ],
+    note: 'The "Tiger City of the Philippines." A major commercial hub with the Ortigas Center. Notable for Shaw Boulevard, The Podium, and Robinsons Forum.'
+  }
+};
+function matchCity(r) {
+  if (!r) return null;
+  const s = String(r).toLowerCase();
+  if (s.includes('san juan')) return 'San Juan';
+  if (s.includes('mandal')) return 'Mandaluyong';
+  return null;
+}
+function showCityLeft(city) {
+  const ci = CITY_INFO[city]; if (!ci) { hideCityLeft(); return; }
+  document.getElementById('city-title-el').textContent = ci.title;
+  const img = document.getElementById('city-img');
+  img.src = ci.img; img.style.display = 'block';
+  img.onerror = () => { img.style.display = 'none'; };
+  document.getElementById('city-rows').innerHTML = ci.stats.map(s => `<div class="city-row"><span class="ck">${s.k}</span><span class="cv">${s.v}</span></div>`).join('');
+  document.getElementById('city-note').textContent = ci.note;
+  document.getElementById('city-card').style.display = 'block';
+}
+function hideCityLeft() { document.getElementById('city-card').style.display = 'none'; }
+
+const SCALE_DESC = {
+  'barangay-scale': { title: 'Barangay Scale', body: 'Ecological metrics aggregated per barangay, the smallest administrative unit in the Philippines. Enables direct comparison across governance boundaries to support city-level green infrastructure policy.' },
+  'hex-scale': { title: 'Hex Grid Scale (30 × 30 m)', body: 'Uniform hexagonal grid at 30 m cell resolution eliminates the modifiable areal unit problem. Each cell covers approx 779 m². Fine-grained clusters, corridors, and bottlenecks become visible at this scale.' },
+  'road-scale': { title: 'Road Scale (5 m Buffer)', body: 'Road segments buffered by 5 m capture the roadside ecological zone. Reveals how the street network mediates connectivity and which roads carry the highest movement density or tree cover.' }
+};
+
+const POLICY_ZONES = {
+  'Corridor Hub':    { color: '#2e7d32', def: 'A high-connectivity zone serving as a primary movement pathway between core habitat patches.', imp: 'Protect existing vegetation. Minimize impervious surface expansion.' },
+  'Dead Zone':       { color: '#D0CFCF', def: 'Ecologically degraded area dominated by impervious surfaces with negligible habitat value.', imp: 'Long-term opportunity for depaving and rewilding.' },
+  'Isolated Refuge': { color: '#6a1b9a', def: 'A habitat patch with limited connectivity to the broader ecological network.', imp: 'Restore connectivity through greening of surrounding areas.' },
+  'Pinch Point':     { color: '#e65100', def: 'A critical spatial bottleneck where the ecological network is highly constrained.', imp: 'Highest urgency for protection and restoration.' },
+  'Transition Areas':{ color: '#f9a825', def: 'Buffer zones between high-connectivity corridors and the fragmented urban matrix.', imp: 'Maintain green buffer through landscaping standards.' }
+};
+const activePZ = new Set(Object.keys(POLICY_ZONES));
+function rebuildPZ() {
+  if (!map.getLayer('lyr-hex-policy')) return;
+  const expr = ['match', ['to-string', ['get', 'PolicyZone']], ...Object.entries(POLICY_ZONES).flatMap(([k,z]) => [k, activePZ.has(k) ? z.color : 'rgba(0,0,0,0)']), 'rgba(0,0,0,0)'];
+  map.setPaintProperty('lyr-hex-policy', 'fill-color', expr);
+}
+function onPZClick(zone, row) {
+  if (activePZ.has(zone)) activePZ.delete(zone); else activePZ.add(zone);
+  row.classList.toggle('off', !activePZ.has(zone));
+  const cb = row.querySelector('input'); if (cb) cb.checked = activePZ.has(zone);
+  rebuildPZ();
+}
+
+const CLYR_SH={showF:['Mun_City','Barangay','HexMovementDensitymean','TreeBarangay_pc'],ren:{'HexMovementDensitymean':'Avg Cell Movement Density','TreeBarangay_pc':'Tree Area Percentage (%)','Mun_City':'City','Barangay':'Barangay'},keyF:['HexMovementDensitymean','TreeBarangay_pc'],hlp:{'HexMovementDensitymean':'Mean movement density.','TreeBarangay_pc':'Tree area percentage.','Mun_City':'City.','Barangay':'Barangay.'}};
+const CLYR = [
+  { key:'pinch', label:'Pinch Points',...CLYR_SH,    srcId:'src-c-pinch', layerId:'lyr-c-pinch', desc:'Critical bottlenecks where flow is most constrained. High positive Z-scores indicate cells significantly clustering above their neighbors.' },
+  { key:'corr',  label:'Corridors',       srcId:'src-c-corr',  layerId:'lyr-c-corr',  desc:'Primary movement pathways with significant high-value clustering of movement density.' },
+  { key:'trans', label:'Transitional',...CLYR_SH,    srcId:'src-c-trans', layerId:'lyr-c-trans', desc:'Buffer zones with moderate Z-score significance indicating intermediate ecological function.' },
+  { key:'iso',   label:'Isolated Patches',srcId:'src-c-iso',   layerId:'lyr-c-iso',   desc:'Consistently low movement density clustering, indicating isolation from the main network.' },
+  { key:'dead',  label:'Dead Zones',      srcId:'src-c-dead',  layerId:'lyr-c-dead',  desc:'Strong negative Z-scores indicating persistent low connectivity clustering.' },
+];
+const CSH = { 'Z-score': 'Standardised spatial statistic. |Z|≥1.65=90%, |Z|≥1.96=95%, |Z|≥2.58=99% confidence.', 'p-value': 'Probability clustering is due to chance. ≤0.10 = statistically significant.', 'Mun_City': 'Municipality or city.', 'Barangay': 'Barangay this cell falls within.', 'Densitymea': 'Mean movement density within this cluster cell.', 'TreeBara_1': 'Tree cover area (%) within this cluster cell.' };
+const CSF = { 'Z-score':'Z-Score', 'p-value':'P-Value', 'Mun_City':'City', 'Barangay':'Barangay', 'Densitymea':'Avg Cell Movement Density', 'TreeBara_1':'Tree Area Percentage (%)' };
+
+function buildClrColor() {
+  const z = ['to-number', ['get', 'Z-score'], 0];
+  return ['case',
+    ['all', ['>=',z,2.58],  ['<=',['to-number',['get','p-value'],1],0.01]], '#67000d',
+    ['all', ['>=',z,1.96],  ['<=',['to-number',['get','p-value'],1],0.05]], '#d7301f',
+    ['all', ['>=',z,1.65],  ['<=',['to-number',['get','p-value'],1],0.10]], '#fc8d59',
+    ['all', ['<=',z,-2.58], ['<=',['to-number',['get','p-value'],1],0.01]], '#08306b',
+    ['all', ['<=',z,-1.96], ['<=',['to-number',['get','p-value'],1],0.05]], '#2171b5',
+    ['all', ['<=',z,-1.65], ['<=',['to-number',['get','p-value'],1],0.10]], '#6baed6',
+    '#bdbdbd'
+  ];
+}
+function buildClrOp() {
+  const p = ['to-number', ['get', 'p-value'], 1];
+  return ['case', ['boolean',['feature-state','selected'],false],0.95, ['boolean',['feature-state','hover'],false],0.88, ['<=',p,0.01],0.88, ['<=',p,0.05],0.80, ['<=',p,0.10],0.70, 0.28];
+}
+function interpC(props) {
+  const z = parseFloat(props['Z-score']), p = parseFloat(props['p-value']);
+  if (isNaN(z) || isNaN(p)) return null;
+  if (p > 0.10 || (z > -1.65 && z < 1.65)) return { type:'Not Significant', conf:'-', color:'#9e9e9e', bg:'#f5f5f5', desc:'No significant spatial clustering at 90% confidence.' };
+  const hot = z > 0;
+  if (Math.abs(z) >= 2.58 && p <= 0.01) return { type:hot?'Hot Spot':'Cold Spot', conf:'99%', color:hot?'#67000d':'#08306b', bg:hot?'#fff0f0':'#f0f4ff', desc:hot?'Very strong high-value clustering (p≤0.01).':'Very strong low-value clustering (p≤0.01).' };
+  if (Math.abs(z) >= 1.96 && p <= 0.05) return { type:hot?'Hot Spot':'Cold Spot', conf:'95%', color:hot?'#d7301f':'#2171b5', bg:hot?'#fff4f0':'#f0f6ff', desc:hot?'Significant high-value clustering (p≤0.05).':'Significant low-value clustering (p≤0.05).' };
+  return { type:hot?'Hot Spot':'Cold Spot', conf:'90%', color:hot?'#fc8d59':'#6baed6', bg:hot?'#fffaf5':'#f5f8ff', desc:hot?'Marginal high-value clustering (p≤0.10).':'Marginal low-value clustering (p≤0.10).' };
+}
+
+const HLYR = [
+  { key:'density', label:'Movement Density', field:'HexMovementDensitymean', srcId:'src-hex-density', layerId:'lyr-hex-density',
+    colors:['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'],
+    desc:'Mean ecological movement density per hex cell from Omniscape circuit-theory modeling.',
+    showF:['Mun_City','Barangay','TreeBarangay_pc','HexMovementDensitymean'],
+    ren:{'HexMovementDensitymean':'Avg Cell Movement Density','TreeBarangay_pc':'Tree Area Percentage (%)','Mun_City':'City','Barangay':'Barangay'},
+    keyF:['HexMovementDensitymean','TreeBarangay_pc'],
+    hlp:{'HexMovementDensitymean':'Mean movement density from Omniscape.','TreeBarangay_pc':'Tree cover (%) intersected with this cell.','Mun_City':'Municipality or city.','Barangay':'Barangay this cell falls within.'},
+    procDesc:'Values derived using Omniscape (Julia), applying circuit theory across a resistance surface from land cover data. Pairwise electrical current between core patches is accumulated. Higher values indicate stronger ecological corridor function.'
+  },
+  { key:'tree', label:'Tree Cover Area', field:'TreeBarangay_area', srcId:'src-hex-tree', layerId:'lyr-hex-tree',
+    colors:['#f7fcf5','#c7e9c0','#74c476','#238b45','#005a32'],
+    desc:'Tree canopy area per hex cell. Classified using log-quantile breaks for skewed distribution (many low values).',
+    showF:['Mun_City','Barangay','TreeBarangay_pc','HexMovementDensitymean'],
+    ren:{'TreeBarangay_area':'Cell Tree Cover Area (sqm)','HexMovementDensitymean':'Avg Cell Movement Density','TreeBarangay_pc':'Tree Area Percentage (%)','Mun_City':'City','Barangay':'Barangay'},
+    keyF:['TreeBarangay_area','HexMovementDensitymean'],
+    hlp:{'TreeBarangay_area':'Tree canopy area intersected with this hex cell.','HexMovementDensitymean':'Mean movement density.','Mun_City':'Municipality or city.'},
+    useJenks: true
+  },
+  { key:'policy', label:'Policy Zone', field:'PolicyZone', srcId:'src-hex-policy', layerId:'lyr-hex-policy',
+    isCat:true,
+    desc:'Ecological management zone per hex cell based on connectivity analysis.',
+    showF:['Mun_City','Barangay','HexMovementDensitymean','TreeBarangay_pc'],
+    ren:{'PolicyZone':'Recommended Policy Zone','HexMovementDensitymean':'Avg Cell Movement Density','TreeBarangay_pc':'Tree Area Percentage (%)','Mun_City':'City','Barangay':'Barangay'},
+    keyF:[],
+    hlp:{'PolicyZone':'Recommended management zone.','HexMovementDensitymean':'Mean movement density.','TreeBarangay_pc':'Tree cover (%).','Mun_City':'Municipality or city.'}
+  },
+];
+
+
+const CORE_FEATURES = {
+  1:'Wack-wack Golf & Country Club',11:'Wack-wack Golf & Country Club',
+  17:'Wack-wack Golf & Country Club',4:'Wack-wack Golf & Country Club',
+  5:'Wack-wack Golf & Country Club',3:'Wack-wack Golf & Country Club',
+  14:'Wack-wack Golf & Country Club',12:'Wack-wack Golf & Country Club',
+  9:'Wack-wack Golf & Country Club',13:'Wack-wack Golf & Country Club',
+  23:'San Miguel Corporation Parking Lot',
+  10:'National Center for Mental Health',6:'National Center for Mental Health',
+  16:'National Center for Mental Health',7:'National Center for Mental Health',
+  15:'National Center for Mental Health',
+  2:'Paradise Park Cemetery',8:'Paradise Park Cemetery',
+  19:'A.H. Poblacion St. Patch',
+  20:'Pinaglabanan Memorial Shrine',21:'Pinaglabanan Memorial Shrine',
+  22:'Pinaglabanan Memorial Shrine',
+  24:'F. Manalo St. Extension Patch',
+  18:'Corazon de Jesus St. Patch'
+};
+const MFST = [['BarangayData.geojson','src-brgy'],['CoreAreas.geojson','src-core'],['HexDensity.geojson','src-hex-density'],['HexTreeArea.geojson','src-hex-tree'],['HexBivariate.geojson','src-hex-biv'],['HexPolicyZone.geojson','src-hex-policy'],['ClusterPinch.geojson','src-c-pinch'],['ClusterCorr.geojson','src-c-corr'],['ClusterTrans.geojson','src-c-trans'],['ClusterIso.geojson','src-c-iso'],['ClusterDead.geojson','src-c-dead'],['RoadAll.geojson','src-road-all'],['RoadRelevant.geojson','src-road-rel']];
+const S = { scale:'barangay-scale', hexKey:'density', locked:false, hov:{src:null,id:null}, sel:{src:null,id:null} };
+let hovBrgyId = null; // currently hovered barangay feature id (for hex/road hover highlight)
+// Remembered barangay from dropdown — persists across all scales
+
+
+
+const GD = {}, FS = {};
+let coresVis = true, brgyVis = false;
+
+proj4.defs('EPSG:32651', '+proj=utm +zone=51 +datum=WGS84 +units=m +no_defs +type=crs');
+function sniff(gj) {
+  for (const f of (gj.features||[])) {
+    let c = f?.geometry?.coordinates; if (!c) continue;
+    while (Array.isArray(c[0])) c = c[0];
+    if (typeof c[0] === 'number') return Math.abs(c[0]) > 500 ? 'UTM' : 'WGS';
+  }
+  return '?';
+}
+function toWGS(gj) {
+  const g = JSON.parse(JSON.stringify(gj));
+  const fw = c => proj4('EPSG:32651','EPSG:4326',c);
+  const cv = (co,t) => {
+    if (t==='Point') return fw(co);
+    if (t==='LineString'||t==='MultiPoint') return co.map(fw);
+    if (t==='Polygon'||t==='MultiLineString') return co.map(r=>r.map(fw));
+    if (t==='MultiPolygon') return co.map(p=>p.map(r=>r.map(fw)));
+    return co;
+  };
+  (g.features||[]).forEach(f => { if(f?.geometry) f.geometry.coordinates = cv(f.geometry.coordinates, f.geometry.type); });
+  return g;
+}
+async function loadGJ(file) {
+  try {
+    const r = await fetch(file); if (!r.ok) throw new Error('HTTP ' + r.status);
+    const raw = await r.json(); const crs = sniff(raw);
+    return { data: crs==='UTM' ? toWGS(raw) : raw, ok:true, crs };
+  } catch(e) { console.warn('[load]', file, e.message); return { data:{type:'FeatureCollection',features:[]}, ok:false, crs:'err' }; }
+}
+function calcSt(feats, prop) {
+  const vals = feats.map(f=>{const v=f.properties?.[prop];return typeof v==='number'?v:parseFloat(v);}).filter(v=>isFinite(v)&&!isNaN(v));
+  if (!vals.length) return null;
+  const s = [...vals].sort((a,b)=>a-b);
+  const min=s[0], max=s[s.length-1], range=max-min||1, mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const N=12, bins=Array(N).fill(0);
+  vals.forEach(v=>{const i=Math.min(Math.floor(((v-min)/range)*N),N-1);bins[i]++;});
+  return { prop,min,max,mean,bins,n:vals.length,range };
+}
+function qBk(feats, prop, n) {
+  const vals = feats.map(f=>{const v=f.properties?.[prop];return typeof v==='number'?v:parseFloat(v);}).filter(v=>isFinite(v)&&!isNaN(v)).sort((a,b)=>a-b);
+  if (!vals.length) return [];
+  return Array.from({length:n-1}, (_,i) => vals[Math.min(Math.floor(((i+1)/n)*vals.length), vals.length-1)]);
+}
+function jenks(feats, prop, n) {
+  const vals = feats.map(f=>{const v=f.properties?.[prop];return typeof v==='number'?v:parseFloat(v);}).filter(v=>isFinite(v)&&!isNaN(v)).sort((a,b)=>a-b);
+  if (!vals.length) return [];
+  const lv = vals.map(v => v>0 ? Math.log1p(v) : 0);
+  const lmin = lv[0], lr = (lv[lv.length-1]-lmin)||1;
+  const bk = [];
+  for (let i=1; i<n; i++) {
+    const tgt = lmin + lr*i/n; let best = 0;
+    lv.forEach((v,ci) => { if (Math.abs(v-tgt) < Math.abs(lv[best]-tgt)) best=ci; });
+    bk.push(vals[best]);
+  }
+  return [...new Set(bk)];
+}
+function cExpr(feats, prop, colors, useJ) {
+  const bk = useJ ? jenks(feats,prop,colors.length) : qBk(feats,prop,colors.length);
+  if (!bk.length) return colors[Math.floor(colors.length/2)];
+  const e = ['step', ['to-number',['get',prop],0], colors[0]];
+  bk.forEach((b,i) => e.push(b, colors[i+1]||colors[colors.length-1]));
+  return e;
+}
+function resolv(feats, pref) {
+  if (!feats.length) return pref;
+  const p = feats[0]?.properties||{};
+  if (p[pref] !== undefined) return pref;
+  const m = Object.keys(p).find(k=>k.toLowerCase()===pref.toLowerCase());
+  if (m) { console.log('[resolve]',pref,'->',m); return m; }
+  console.warn('[resolve]',pref,'not found. Keys:',Object.keys(p).slice(0,8).join(', '));
+  return pref;
+}
+const fmt = v => { if (v==null) return '-'; const n=+v; if(isNaN(n)) return String(v); return n%1===0?n.toLocaleString():n.toLocaleString('en',{maximumFractionDigits:3}); };
+
+// MAP — starts at Philippines overview
+const map = new maplibregl.Map({ container:'map', style:'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', center:[117,12], zoom:5.0, minZoom:5, maxZoom:20, attributionControl:false });
+
+map.addControl(new maplibregl.ScaleControl({maxWidth:90,unit:'metric'}), 'bottom-right');
+map.on('mousemove', e => { const{lng,lat}=e.lngLat; document.getElementById('coord-val').textContent=lat.toFixed(5)+', '+lng.toFixed(5); });
+
+// ZOOM FADE
+map.on('zoom', () => {
+  const z = map.getZoom();
+  // Fade home-left title panel as user zooms in/out
+  const homeLeft = document.getElementById('home-left');
+  if (homeLeft && homeVisible) {
+    // While on home screen, fade title when map zooms (birds / exploration)
+    const titleOp = Math.max(0, Math.min(1, (6.5 - z) / 1.5));
+    homeLeft.style.opacity = titleOp;
+  }
+  if (homeVisible || entering) return;
+  const op = z < FADE_START ? Math.max(0, Math.min(0.80, (FADE_START-z)/(FADE_START-MAP_MIN_ZOOM))) : 0;
+  document.getElementById('zoom-fade').style.opacity = op;
+});
+map.on('zoomend', () => {
+  if (homeVisible || entering) return;
+  if (map.getZoom() <= MAP_MIN_ZOOM + 0.15) setTimeout(() => showHome(), 50);
+});
+
+// MAIN LOAD
+map.on('load', async () => {
+  setMsg('Fetching GeoJSON...');
+  const _bar=document.getElementById('loader-bar'),_tot=MFST.length;let _done=0;
+  const results = await Promise.all(MFST.map(([f]) => loadGJ(f).then(r=>{_done++;if(_bar)_bar.style.width=Math.round(_done/_tot*100)+'%';return r;})));
+  MFST.forEach(([,srcId],i) => {
+    GD[srcId] = results[i].data; FS[srcId] = {};
+    const feats = results[i].data.features||[];
+    if (feats[0]) Object.keys(feats[0].properties||{}).forEach(k => { const st=calcSt(feats,k); if(st) FS[srcId][k]=st; });
+  });
+  HLYR.forEach(cfg => {
+    if (!cfg.isCat) {
+      const feats = GD[cfg.srcId]?.features||[];
+      const r = resolv(feats, cfg.field);
+      if (r !== cfg.field) {
+        cfg.showF = cfg.showF?.map(f => f===cfg.field?r:f);
+        cfg.keyF = cfg.keyF?.map(f => f===cfg.field?r:f);
+        if (cfg.ren?.[cfg.field]) { cfg.ren[r]=cfg.ren[cfg.field]; delete cfg.ren[cfg.field]; }
+        if (cfg.hlp?.[cfg.field]) { cfg.hlp[r]=cfg.hlp[cfg.field]; delete cfg.hlp[cfg.field]; }
+        cfg.field = r;
+      }
+      console.log('['+cfg.key+'] field='+cfg.field, 'sample=', feats[0]?.properties?.[cfg.field]);
+    }
+  });
+  setMsg('Building layers...');
+  MFST.forEach(([,srcId],i) => map.addSource(srcId, {type:'geojson',data:results[i].data,generateId:true}));
+
+  const rFeats = GD['src-road-all']?.features||[];
+  const rGeom = rFeats[0]?.geometry?.type||'LineString';
+  const rIsPoly = rGeom==='Polygon'||rGeom==='MultiPolygon';
+  console.log('[roads] geom:', rGeom, 'poly:', rIsPoly);
+
+  // BARANGAY
+  map.addLayer({id:'lyr-brgy-fill',type:'fill',source:'src-brgy',layout:{visibility:'visible'},paint:{'fill-color':'#3a7fbf','fill-opacity':['case',['boolean',['feature-state','selected'],false],.52,['boolean',['feature-state','hover'],false],.28,.12],'fill-outline-color':'rgba(0,0,0,0)'}});
+  map.addLayer({id:'lyr-brgy-line',type:'line',source:'src-brgy',layout:{visibility:'visible'},paint:{'line-color':['case',['boolean',['feature-state','selected'],false],'#1a9e6e',['boolean',['feature-state','hover'],false],'#2d64a8','rgba(30,80,160,0.22)'],'line-width':['case',['boolean',['feature-state','selected'],false],3,['boolean',['feature-state','hover'],false],2,.7]}});
+
+  // HEX
+  HLYR.forEach(cfg => {
+    const feats = GD[cfg.srcId]?.features||[];
+    let cp;
+    if (cfg.isCat) {
+      cp = ['match',['to-string',['get',cfg.field]],...Object.entries(POLICY_ZONES).flatMap(([k,z])=>[k,z.color]),'#aaa'];
+    } else {
+      const st = calcSt(feats, cfg.field);
+      cp = st ? cExpr(feats, cfg.field, cfg.colors, cfg.useJenks) : cfg.colors[2];
+      if (!st) console.warn('['+cfg.key+'] no stats for', cfg.field);
+    }
+    map.addLayer({id:cfg.layerId,type:'fill',source:cfg.srcId,layout:{visibility:'none'},paint:{'fill-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',cp],'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.88,['boolean',['feature-state','selected'],false],0.88,0.55],'fill-outline-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',cp]}});
+  });
+  CLYR.forEach(cfg => { map.addLayer({id:cfg.layerId,type:'fill',source:cfg.srcId,layout:{visibility:'none'},paint:{'fill-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',buildClrColor()],'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.88,['boolean',['feature-state','selected'],false],0.88,0.55],'fill-outline-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',buildClrColor()]}}); });
+
+  // ROADS — single fully opaque line, wide hit layer
+  if (rIsPoly) {
+    map.addLayer({id:'lyr-road',type:'fill',source:'src-road-all',layout:{visibility:'none'},paint:{'fill-color':['case',['boolean',['feature-state','selected'],false],'#1a9e6e',['boolean',['feature-state','hover'],false],'#8a9198','#d0d4d9'],'fill-opacity':1,'fill-outline-color':'rgba(0,0,0,0)'}});
+  } else {
+    map.addLayer({id:'lyr-road',type:'line',source:'src-road-all',layout:{visibility:'none','line-join':'round','line-cap':'round'},paint:{'line-color':['case',['boolean',['feature-state','selected'],false],'#1a9e6e',['boolean',['feature-state','hover'],false],'#8a9198','#d0d4d9'],'line-width':['interpolate',['linear'],['zoom'],10,1,12,2,14,4,16,8,18,14],'line-opacity':1}});
+    map.addLayer({id:'lyr-road-hit',type:'line',source:'src-road-all',layout:{visibility:'none','line-join':'round','line-cap':'round'},paint:{'line-color':'rgba(0,0,0,0.005)','line-width':40}});
+  }
+  const relFeats = GD['src-road-rel']?.features||[];
+  const relPoly = (relFeats[0]?.geometry?.type||'LineString')==='Polygon';
+  if (relPoly) {
+    map.addLayer({id:'lyr-road-rel',type:'fill',source:'src-road-rel',layout:{visibility:'none'},paint:{'fill-color':'#1a9e6e','fill-opacity':0.9,'fill-outline-color':'rgba(0,0,0,0)'}});
+  } else {
+    map.addLayer({id:'lyr-road-rel',type:'line',source:'src-road-rel',layout:{visibility:'none','line-join':'round','line-cap':'round'},paint:{'line-color':'#1a9e6e','line-width':['interpolate',['linear'],['zoom'],10,1.5,12,3,14,5.5,16,9,18,14],'line-opacity':1}});
+  }
+
+  // Barangay outline (dark grey)
+  map.addLayer({id:'lyr-brgy-out',type:'line',source:'src-brgy',layout:{visibility:'none'},paint:{'line-color':'#888888','line-width':1,'line-opacity':0.50}});
+  // Core areas — solid fill + bright outline
+  map.addLayer({id:'lyr-core-fill',type:'fill',source:'src-core',layout:{visibility:'visible'},paint:{'fill-color':'#1a7a2e','fill-opacity':['case',['boolean',['feature-state','selected'],false],.9,['boolean',['feature-state','hover'],false],.78,.65],'fill-outline-color':'rgba(0,0,0,0)'}});
+  map.addLayer({id:'lyr-core-line',type:'line',source:'src-core',layout:{visibility:'visible'},paint:{'line-color':'#d3efd8','line-width':['case',['boolean',['feature-state','selected'],false],2.8,['boolean',['feature-state','hover'],false],2,1.4],'line-opacity':0.88}});
+
+  // ROAD LABELS — symbol layers on top
+  const rNm = ['coalesce',['get','name'],['get','road_name'],['get','ROAD_NAME'],['get','Name'],''];
+  map.addLayer({id:'lyr-rlbl-pri',type:'symbol',source:'src-road-all',minzoom:13,
+    filter:['in',['downcase',['coalesce',['get','highway'],'']],['literal',['primary','trunk','motorway','secondary','primary_link']]],
+    layout:{visibility:'none','text-field':rNm,'text-size':['interpolate',['linear'],['zoom'],13,9,17,13],'symbol-placement':'line','text-max-angle':25,'text-pitch-alignment':'viewport'},
+    paint:{'text-color':'#2a3440','text-halo-color':'rgba(255,255,255,0.95)','text-halo-width':2}});
+  map.addLayer({id:'lyr-rlbl-loc',type:'symbol',source:'src-road-all',minzoom:15,
+    filter:['!',['in',['downcase',['coalesce',['get','highway'],'']],['literal',['primary','trunk','motorway','secondary','primary_link']]]],
+    layout:{visibility:'none','text-field':rNm,'text-size':['interpolate',['linear'],['zoom'],15,9,18,12],'symbol-placement':'line','text-max-angle':25},
+    paint:{'text-color':'#3a4a5a','text-halo-color':'rgba(255,255,255,0.92)','text-halo-width':1.8}});
+
+  // Bring overlays to top
+  ['lyr-brgy-out','lyr-core-fill','lyr-core-line'].forEach(l => { try{map.moveLayer(l);}catch(e){} });
+
+  
+
+
+
+
+function checkBrgyContext(clickedGeom) {
+  // Zoom to center of clicked cell/road only
+  if (!clickedGeom) return;
+  try {
+    let center;
+    if (clickedGeom.type==='Polygon'||clickedGeom.type==='MultiPolygon') {
+      const c=turf.centroid({type:'Feature',geometry:clickedGeom});
+      center=[c.geometry.coordinates[0],c.geometry.coordinates[1]];
+    } else if (clickedGeom.type==='LineString') {
+      const mid=clickedGeom.coordinates[Math.floor(clickedGeom.coordinates.length/2)];
+      center=[mid[0],mid[1]];
+    } else if (clickedGeom.type==='MultiLineString') {
+      const mid=clickedGeom.coordinates[0][Math.floor(clickedGeom.coordinates[0].length/2)];
+      center=[mid[0],mid[1]];
+    }
+    if (center) map.flyTo({center,zoom:Math.max(map.getZoom(),15),duration:500,essential:true});
+  } catch(e) {}
+}
+
+function setBrgyHover(brgyName) {
+  clearBrgyHover();
+  if (!brgyName) return;
+  const feats = GD['src-brgy']?.features||[];
+  feats.forEach((f,i) => { if(nm(f.properties,'')===brgyName) hovBrgyId=f.id!=null?f.id:i; });
+  if(hovBrgyId!=null) try{map.setFeatureState({source:'src-brgy',id:hovBrgyId},{hover:true});}catch(e){}
+}
+
+function clearBrgyHover() {
+  if(hovBrgyId!=null){try{map.setFeatureState({source:'src-brgy',id:hovBrgyId},{hover:false});}catch(e){}hovBrgyId=null;}
+}
+
+// INTERACTIONS
+  att('lyr-brgy-fill','src-brgy', f => { const p=f.properties||{}; const city=matchCity(p.Mun_City||p.City||''); return {badge:'Barangay',name:nm(p,'Barangay'),tipSub:'Click to view statistics',rfn:locked=>rBrgy(p,locked,city)}; });
+  att('lyr-core-fill','src-core', f => {
+  const p=f.properties||{};
+  const rank=p.Rank||p.ID||'-';
+  const feat=CORE_FEATURES[+rank]||'';
+  const tipName=feat?`Core #${rank} — ${feat}`:`Core Area #${rank}`;
+  return {badge:'Core Habitat',name:tipName,tipSub:`Rank #${rank} | dI': ${fmt(p["dI'"]??p.dI)}`,rfn:locked=>rCore(p,locked)};
+});
+  HLYR.forEach(cfg => {
+  att(cfg.layerId,cfg.srcId, f => {
+    const p=f.properties||{};
+    const brgyName=p['Barangay']||p['barangay']||p['BARANGAY']||'';
+    const cityName=p['Mun_City']||p['City']||'';
+    const dispName=[cityName,brgyName].filter(Boolean).join(' · ')||cfg.label;
+    const geom=f.geometry||null;
+    return {badge:'',name:'',tipSub:fmt(p[cfg.field]),rfn:locked=>{
+      if(locked) checkBrgyContext(geom);
+      return rHex(p,cfg,locked);
+    }};
+  });
+  // Barangay highlight on hover
+  map.on('mousemove', cfg.layerId, e => {
+    if (!e.features?.length) return;
+    const p = e.features[0].properties||{};
+    const bn = p['Barangay']||p['barangay']||p['BARANGAY']||null;
+    setBrgyHover(bn);
+  });
+  map.on('mouseleave', cfg.layerId, () => clearBrgyHover());
+});
+  CLYR.forEach(cfg => {
+  att(cfg.layerId,cfg.srcId, f => {
+    const p=f.properties||{}; const sig=interpC(p);
+    const dispName=sig&&sig.type!=='Not Significant'?sig.type+' ('+sig.conf+')':'Not Significant';
+    const bn=p['Barangay']||p['barangay']||null; const geom=f.geometry||null;
+    return {badge:'',name:'',tipSub:sig?sig.conf+' confidence':'',rfn:locked=>{
+      if(locked) checkBrgyContext(geom);
+      return rCluster(p,cfg,sig,locked);
+    }};
+  });
+  map.on('mousemove', cfg.layerId, e => {
+    if (!e.features?.length) return;
+    const p = e.features[0].properties||{};
+    const bn = p['Barangay']||p['barangay']||p['BARANGAY']||null;
+    setBrgyHover(bn);
+  });
+  map.on('mouseleave', cfg.layerId, () => clearBrgyHover());
+});
+  const roadInfoWrapper = f => {
+    const info = roadFn(f);
+    const origRfn = info.rfn;
+    const geom = f.geometry||null;
+    const brgyName = info.tipSub ? info.tipSub.replace('Barangay: ','') : null;
+    info.rfn = locked => {
+      if (locked) checkBrgyContext(geom);
+      return origRfn(locked);
+    };
+    return info;
+  };
+  // Quick barangay lookup for road hover
+  function getRoadBrgyName(f) {
+    try {
+      const geom = f.geometry;
+      if (!geom || !GD['src-brgy']?.features?.length) return null;
+      let pt;
+      if (geom.type==='LineString') pt=turf.point(geom.coordinates[Math.floor(geom.coordinates.length/2)]);
+      else if (geom.type==='Polygon') pt=turf.centroid(f);
+      else return null;
+      for (const bf of GD['src-brgy'].features) {
+        if (bf.geometry && turf.booleanPointInPolygon(pt,bf)) return nm(bf.properties,'Barangay');
+      }
+    } catch(e) {}
+    return null;
+  }
+  const roadHoverLayers = rIsPoly ? ['lyr-road'] : ['lyr-road-hit','lyr-road'];
+  if (rIsPoly) { att('lyr-road','src-road-all', roadInfoWrapper); }
+  else { att('lyr-road-hit','src-road-all', roadInfoWrapper); att('lyr-road','src-road-all', roadInfoWrapper); }
+  // Road hover brgy highlight
+  roadHoverLayers.forEach(lyr => {
+    map.on('mousemove', lyr, e => {
+      if (!e.features?.length) return;
+      const bn = getRoadBrgyName(e.features[0]);
+      setBrgyHover(bn);
+    });
+    map.on('mouseleave', lyr, () => clearBrgyHover());
+  });
+
+  buildHexBtns(); buildBrgyDD(); applyScale('barangay-scale');
+  document.getElementById('loader').classList.add('out');
+  setTimeout(() => document.getElementById('loader').style.display='none', 500);
+  // Keep scale bar hidden until enterMap
+  const _scCtrl=document.querySelector('.maplibregl-ctrl-bottom-right');
+  if(_scCtrl && homeVisible) _scCtrl.classList.add('offscreen');
+   // start birds now that map.project() works
+});
+
+// DROPDOWN
+function buildBrgyDD() {
+  const sel = document.getElementById('brgy-sel');
+  const feats = GD['src-brgy']?.features||[];
+  const bySJ=[], byMan=[];
+  feats.forEach(f => { const p=f.properties||{}; const name=nm(p,'?'); const city=matchCity(p.Mun_City||p.City||''); if(city==='San Juan')bySJ.push(name); else byMan.push(name); });
+  bySJ.sort(); byMan.sort();
+  const g1=document.createElement('optgroup'); g1.label='San Juan City'; bySJ.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;g1.appendChild(o);});
+  const g2=document.createElement('optgroup'); g2.label='Mandaluyong City'; byMan.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;g2.appendChild(o);});
+  sel.appendChild(g1); sel.appendChild(g2);
+}
+
+
+function onBrgySelect(sel) {
+  if (!sel.value) return;
+  const feats = GD['src-brgy']?.features||[];
+  let feat = null, featIdx = -1;
+  feats.forEach((f,i) => { if(nm(f.properties,'')===sel.value){feat=f;featIdx=i;} });
+  if (!feat||!feat.geometry) return;
+  const fid = feat.id != null ? feat.id : featIdx;
+  const p = feat.properties||{};
+  const city = matchCity(p.Mun_City||p.City||'');
+  const bbox = turf.bbox(feat);
+
+  try {
+    // Clear previous selection
+    if (S.sel.id!=null) try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(e){}
+    S.locked=true; S.sel={src:'src-brgy',id:fid};
+    try{map.setFeatureState({source:'src-brgy',id:fid},{selected:true});}catch(e){}
+    if (S.scale==='barangay-scale') {
+      fillPanel({badge:'Barangay',name:nm(p,'Barangay'),rfn:l=>rBrgy(p,l,city)},true);
+      map.fitBounds([[bbox[0],bbox[1]],[bbox[2],bbox[3]]],{padding:80,maxZoom:16,duration:700});
+      map.once('moveend',()=>{
+        try{map.setFeatureState({source:'src-brgy',id:fid},{selected:true});}catch(e){}
+        fillPanel({badge:'Barangay',name:nm(p,'Barangay'),rfn:l=>rBrgy(p,l,city)},true);
+      });
+    } else {
+      // Hex/Road: just zoom to barangay
+      map.fitBounds([[bbox[0],bbox[1]],[bbox[2],bbox[3]]],{padding:80,maxZoom:16,duration:700});
+    }
+  } catch(e) { console.warn(e); }
+}
+
+// RENDER HELPERS
+function nm(p, fb) { const keys=['name','Name','NAME','barangay','Barangay','BARANGAY','brgy','BRGY','road_name','ROAD_NAME','street','label','Label']; for(const k of keys)if(p?.[k])return String(p[k]); return fb||'Feature'; }
+function qmark(help) { if (!help) return ''; return `<span class="qm" data-tip="${help.replace(/"/g,"'")}">?</span>`; }
+
+const BHLP = {'City':'Municipality or city.','Barangay Area (km²)':'Total land area in square metres.','Avg. Movement Density':'Mean ecological movement flow via Omniscape circuit theory.','Total Tree Area (km²)':'Total tree canopy cover in square metres.','No. of Core Areas':'Number of core habitat patches (MSPA/GuidosToolbox) within this barangay.','Core Area (sqm)':'Total area of all core habitat patches in square metres.'};
+const BF = [{r:'Mun_City',l:'City',k:false},{r:'BrgyArea',l:'Barangay Area (km²)',k:false},{r:'Densitymean',l:'Avg. Movement Density',k:true},{r:'TreeSQM_sum',l:'Total Tree Area (sqm)',k:true},{r:'CoreArea_count',l:'No. of Core Areas',k:true},{r:'CoreArea_sum',l:'Core Area (sqm)',k:false}];
+
+function fRow(label, val, help, hi) {
+  return `<div class="prop-row"><span class="pk">${label}</span>${qmark(help)}<span class="pv${hi?' hi':''}">${val}</span></div>`;
+}
+function mChart(st, cv, title, help) {
+  const W=236,H=44,n=st.bins.length,bW=W/n,mx=Math.max(...st.bins)||1,rng=st.range||1;
+  const cB=cv!=null?Math.min(Math.floor(((cv-st.min)/rng)*n),n-1):-1;
+  let bars='';
+  st.bins.forEach((c,i)=>{const h=Math.max((c/mx)*H,1);bars+=`<rect x="${i*bW+.5}" y="${H-h}" width="${bW-1}" height="${h}" fill="${i===cB?'#1a9e6e':'rgba(58,127,191,0.26)'}" rx="1"/>`;});
+  let mk='';
+  if(cv!=null&&isFinite(cv)){const x=Math.min(((cv-st.min)/rng)*W,W-1);mk=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1a9e6e" stroke-width="1.5" stroke-dasharray="3,2"/>`;}
+  return `<div class="chart-wrap"><div class="chart-ttl">${title}${qmark(help)}</div><svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">${bars}${mk}</svg><div class="chart-labs"><span>${fmt(st.min)}</span><span>avg ${fmt(st.mean)}</span><span>${fmt(st.max)}</span></div>${cv!=null&&isFinite(cv)?`<div class="chart-cur">This feature: <strong>${fmt(cv)}</strong></div>`:''}</div>`;
+}
+function tColl(btn) { const b=btn.nextElementSibling; const a=btn.querySelector('span:last-child'); if(b){b.classList.toggle('hidden');if(a)a.textContent=b.classList.contains('hidden')?'+':'-';} }
+
+function rBrgy(p, locked, city) {
+  const toKm2=v=>v!=null&&!isNaN(+v)?fmt((+v)/1e6):'-';
+  const boxes=[{v:fmt(p.Densitymean??'-'),k:'Avg Movement Density'},{v:toKm2(p.TreeSQM_sum),k:'Total Tree Area (km²)'},{v:fmt(p.CoreArea_count??0),k:'No. of Core Areas'},{v:toKm2(p.BrgyArea),k:'Barangay Area (km²)'}];
+  let h = '';
+  if (locked) h += `<div class="stat-grid">${boxes.map(b=>`<div class="stat-box"><div class="stat-val">${b.v}</div><div class="stat-key">${b.k}</div></div>`).join('')}</div>`;
+  if (locked) ['Densitymean','TreeSQM_sum'].forEach(raw=>{
+    const cfg=BF.find(f=>f.r===raw);
+    // Compute stats on demand if not pre-computed
+    if(!FS['src-brgy']?.[raw]){
+      const feats=GD['src-brgy']?.features||[];
+      if(feats.length){
+        if(!FS['src-brgy'])FS['src-brgy']={};
+        const st=calcSt(feats,raw);
+        if(st)FS['src-brgy'][raw]=st;
+      }
+    }
+    const st=FS['src-brgy']?.[raw];
+    if(st)h+=mChart(st,p[raw],cfg?.l||raw,BHLP[cfg?.l||'']||'');
+  });
+  h += '<div class="sec-hdr">Properties</div><div class="props-wrap">';
+  BF.forEach(cfg => {
+    let val;
+    if (['BrgyArea'].includes(cfg.r)) {
+      val = p[cfg.r]!=null ? fmt((+p[cfg.r])/1e6) : '0';
+    } else {
+      val = fmt(p[cfg.r]??0);
+    }
+    h += fRow(cfg.l, val, BHLP[cfg.l]||'', cfg.k);
+  });
+  h += '</div>';
+  if (locked && city && S.scale==='barangay-scale') showCityLeft(city); else hideCityLeft();
+  return h;
+}
+function rCore(p, locked) {
+  let h = `<div class="def-box"><div class="def-title">What is a Core Habitat?</div>Large interior patches of natural vegetation identified through MSPA in GuidosToolbox. They are source and destination nodes for species movement. Individual importance quantified by CONEFOR.<div class="def-imp"><div class="def-imp-lbl">Connectivity Significance</div>Higher dI' = larger drop in network connectivity if removed. Core Rank orders patches from most (1) to least critical.</div></div>`;
+  if (locked) {
+    const boxes=[{v:fmt(p.Area??'-'),k:'Area (sqm)'},{v:fmt(p["dI'"]??p.dI??'-'),k:"Importance (dI')"},{v:fmt(p.Rank??'-'),k:'Core Rank'}];
+    h += `<div class="stat-grid">${boxes.map(b=>`<div class="stat-box"><div class="stat-val">${b.v}</div><div class="stat-key">${b.k}</div></div>`).join('')}</div>`;
+  }
+  const rank=p.Rank||p.ID||null;
+  const feat=rank?CORE_FEATURES[+rank]||'-':'-';
+  const CF=[
+    {r:'Rank',l:'Core Rank',h:'Importance rank: Rank 1 = most critical patch to overall network connectivity.'},
+    {r:"dI'",l:"Importance Index (dI')",h:"Percentage drop in overall network connectivity if this patch is removed. Computed by CONEFOR."},
+    {r:'Area',l:'Area (sqm)',h:'Total area of this core habitat patch in square metres.'},
+  ];
+  h += '<div class="sec-hdr">Properties</div><div class="props-wrap">';
+  h += fRow('Feature', feat, 'Land use or landmark name this core habitat patch corresponds to.', true);
+  CF.forEach(c => { const v=p[c.r]??p[c.r.replace("'","")]??null; h+=fRow(c.l,fmt(v),c.h,false); });
+  h += '</div>';
+  return h;
+}
+function rHex(p, cfg, locked) {
+  let h = ''; const kF=cfg.keyF||[], sS=FS[cfg.srcId]||{};
+  if (locked && kF.length) {
+    const boxes = kF.map(r=>({v:fmt(p[r]??'-'),k:cfg.ren?.[r]||r}));
+    while (boxes.length < 2) boxes.push({v:'-',k:'-'});
+    h += `<div class="stat-grid">${boxes.slice(0,4).map(b=>`<div class="stat-box"><div class="stat-val">${b.v}</div><div class="stat-key">${b.k}</div></div>`).join('')}</div>`;
+    kF.forEach(r => { const st=sS[r]; if(st) h+=mChart(st,p[r],cfg.ren?.[r]||r,cfg.hlp?.[r]||''); });
+  }
+  if (cfg.procDesc) h += `<button class="coll-btn" onclick="tColl(this)"><span>Modeling Process</span><span>+</span></button><div class="coll-body hidden">${cfg.procDesc}</div>`;
+  if (cfg.isCat && p[cfg.field]) {
+    const pz = Object.entries(POLICY_ZONES).find(([k])=>String(p[cfg.field]).toLowerCase()===k.toLowerCase());
+    if (pz) { const[pk,pv]=pz; h+=`<div class="def-box"><div class="def-title" style="color:${pv.color}">${pk}</div>${pv.def}<div class="def-imp"><div class="def-imp-lbl">Management Implication</div>${pv.imp}</div></div>`; }
+  }
+  h += '<div class="sec-hdr">Properties</div><div class="props-wrap">';
+  (cfg.showF||[]).forEach(r => {
+    // Skip fields already shown in stat boxes (keyF) to avoid duplication
+    if(kF.includes(r)) return;
+    const val = (r==='Barangay'||r==='barangay') ? (p['Barangay']||p['barangay']||p['BARANGAY']||'-') : fmt(p[r]);
+    if(val===undefined||val===null) return;
+    if(p[r]===undefined && r!=='Barangay' && r!=='barangay') return;
+    h+=fRow(cfg.ren?.[r]||r,String(val),cfg.hlp?.[r]||'',false);
+  });
+  // Always add keyF fields as prop rows too (below the stat boxes, for reference)
+  kF.forEach(r=>{
+    const val=fmt(p[r]??'-');
+    h+=fRow(cfg.ren?.[r]||r,String(val),cfg.hlp?.[r]||'',true);
+  });
+  h += '</div>';
+  return h;
+}
+function rCluster(p, cfg, sig, locked) {
+  let h = '';
+  if(locked && cfg.keyF?.length){
+    const boxes=cfg.keyF.map(r=>({v:fmt(p[r]??'-'),k:cfg.ren?.[r]||r}));
+    while(boxes.length<2)boxes.push({v:'-',k:'-'});
+    h+=`<div class="stat-grid">${boxes.slice(0,4).map(b=>`<div class="stat-box"><div class="stat-val">${b.v}</div><div class="stat-key">${b.k}</div></div>`).join('')}</div>`;
+    cfg.keyF.forEach(r=>{const st=(FS[cfg.srcId]||{})[r];if(st)h+=mChart(st,p[r],cfg.ren?.[r]||r,cfg.hlp?.[r]||'');});
+  }
+  if(sig)h+=`<div class="def-box" style="border-color:${sig.color}30;background:${sig.bg}"><div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><div style="width:10px;height:10px;border-radius:50%;background:${sig.color};flex-shrink:0"></div><strong style="color:${sig.color}">${sig.type}</strong><span style="font-size:.62rem;color:var(--tx2);margin-left:auto">${sig.conf} confidence</span></div><div style="font-size:.7rem;color:var(--tx2);line-height:1.55">${sig.desc}</div></div>`;
+  h+=`<button class="coll-btn" onclick="tColl(this)"><span>Statistical Method</span><span>+</span></button><div class="coll-body hidden">Getis-Ord Gi* spatial autocorrelation. Z-scores and p-values classify cells at 90% (|Z|≥1.65), 95% (|Z|≥1.96), and 99% (|Z|≥2.58) confidence levels.</div>`;
+  h+='<div class="sec-hdr">Properties</div><div class="props-wrap">';
+  (cfg.showF||[]).forEach(r=>{const val=(r==='Barangay'||r==='barangay')?(p['Barangay']||p['barangay']||'-'):fmt(p[r]);if(val!==undefined)h+=fRow(cfg.ren?.[r]||r,String(val),cfg.hlp?.[r]||'',false);});
+  Object.entries(CSF).forEach(([r,l])=>{if(r in p)h+=fRow(l,fmt(p[r]),CSH[r]||'',r==='Z-score'||r==='p-value');});
+  h+='</div>';
+  return h;
+}
+function roadFn(f) {
+  const p=f.properties||{}; const rn=nm(p,'Road Segment');
+  let brgy='-', city='-';
+  try {
+    if (f.geometry && GD['src-brgy']?.features?.length) {
+      const geom=f.geometry; let pt;
+      if (geom.type==='LineString') pt=turf.point(geom.coordinates[Math.floor(geom.coordinates.length/2)]);
+      else pt=turf.centroid(f);
+      for (const bf of GD['src-brgy'].features) {
+        if (bf.geometry && turf.booleanPointInPolygon(pt,bf)) { brgy=nm(bf.properties,'Barangay'); city=bf.properties?.Mun_City||bf.properties?.City||'-'; break; }
+      }
+    }
+  } catch(e) {}
+  return { badge:'Road', name:rn, tipSub:'Barangay: '+brgy, rfn:locked=>rRoad(p,brgy,city,locked) };
+}
+function rRoad(p, brgy, city, locked) {
+  const tryF = c => c.find(k=>k in p);
+  const dF = tryF(['RoadMoveDenmean','RoadMoveDenMean','roadMoveDenMean','roadmovedenmean'])||'RoadMoveDenmean';
+  const tF = tryF(['TreeClipped_pc','treeclipped_pc','TreeClippedPc'])||'TreeClipped_pc';
+  const RF = [{r:dF,l:'Avg Roadside Movement Density',h:'Mean movement density within the 5 m road buffer.',k:true},{r:tF,l:'Roadside Tree Area (%)',h:'Proportion of road buffer covered by tree canopy.',k:true}];
+  let h = '<div class="def-box"><div class="def-title">What is a Relevant Road?</div>A road segment is ecologically relevant when it has both high movement density (Omniscape) and sufficient tree canopy within its 5 m buffer — from bivariate analysis intersected with the buffered road network.<div class="def-imp"><div class="def-imp-lbl">Planning Implication</div>Priority targets for roadside greening and corridor enhancement.</div></div>';
+  if (locked) {
+    const boxes = RF.map(f=>({v:fmt(p[f.r]??'-'),k:f.l}));
+    h += `<div class="stat-grid">${boxes.map(b=>`<div class="stat-box"><div class="stat-val">${b.v}</div><div class="stat-key">${b.k}</div></div>`).join('')}</div>`;
+    RF.forEach(f => { const st=FS['src-road-all']?.[f.r]; if(st) h+=mChart(st,p[f.r],f.l,f.h); });
+  }
+  h += '<div class="sec-hdr">Properties</div><div class="props-wrap">';
+  h += fRow('City', city, 'City this road segment falls within.', false);
+  h += fRow('Barangay', brgy, 'Barangay this road segment falls within.', false);
+  RF.forEach(f => h += fRow(f.l, fmt(p[f.r]), f.h, f.k));
+  h += '</div>';
+  return h;
+}
+
+// PANEL
+function fillPanel(info, locked) {
+  const badge = document.getElementById('rp-badge');
+  if (badge) badge.textContent = info.badge||'-';
+  const nameEl = document.getElementById('rp-name');
+  if (nameEl) {
+    if (info.name) { nameEl.textContent = info.name; nameEl.style.display = ''; }
+    else           { nameEl.textContent = ''; nameEl.style.display = 'none'; }
+  }
+  document.getElementById('rp-hint').style.display = 'none';
+  const body=document.getElementById('rp-body');
+  body.style.display='block';
+  body.innerHTML='<div class="sec-hdr">Statistics</div>'+info.rfn(locked);
+}
+function clearPanel() {
+  document.getElementById('rp-badge').textContent='-';
+  document.getElementById('rp-name').textContent='Hover or click a feature';
+  document.getElementById('rp-hint').style.display='block';
+  const body=document.getElementById('rp-body'); body.style.display='none'; body.innerHTML='';
+  hideCityLeft();
+}
+function showLDesc(lbl, desc) { document.getElementById('rp-ll').textContent=lbl; document.getElementById('rp-lb').textContent=desc; document.getElementById('rp-ldesc').style.display='block'; }
+function hideLDesc() { document.getElementById('rp-ldesc').style.display='none'; }
+
+
+
+
+
+
+function checkBrgyContext(clickedGeom) {
+  // Zoom to center of clicked cell/road only
+  if (!clickedGeom) return;
+  try {
+    let center;
+    if (clickedGeom.type==='Polygon'||clickedGeom.type==='MultiPolygon') {
+      const c=turf.centroid({type:'Feature',geometry:clickedGeom});
+      center=[c.geometry.coordinates[0],c.geometry.coordinates[1]];
+    } else if (clickedGeom.type==='LineString') {
+      const mid=clickedGeom.coordinates[Math.floor(clickedGeom.coordinates.length/2)];
+      center=[mid[0],mid[1]];
+    } else if (clickedGeom.type==='MultiLineString') {
+      const mid=clickedGeom.coordinates[0][Math.floor(clickedGeom.coordinates[0].length/2)];
+      center=[mid[0],mid[1]];
+    }
+    if (center) map.flyTo({center,zoom:Math.max(map.getZoom(),15),duration:500,essential:true});
+  } catch(e) {}
+}
+
+function setBrgyHover(brgyName) {
+  clearBrgyHover();
+  if (!brgyName) return;
+  const feats = GD['src-brgy']?.features||[];
+  feats.forEach((f,i) => { if(nm(f.properties,'')===brgyName) hovBrgyId=f.id!=null?f.id:i; });
+  if(hovBrgyId!=null) try{map.setFeatureState({source:'src-brgy',id:hovBrgyId},{hover:true});}catch(e){}
+}
+
+// INTERACTIONS
+function setH(srcId, id) {
+  if (S.hov.id===id && S.hov.src===srcId) return;
+  clrH(); S.hov={src:srcId,id};
+  if (srcId&&id!=null) try{map.setFeatureState({source:srcId,id},{hover:true});}catch(e){}
+}
+function clrH() {
+  if (S.hov.id!=null&&S.hov.src) try{map.setFeatureState({source:S.hov.src,id:S.hov.id},{hover:false});}catch(e){}
+  S.hov={src:null,id:null};
+}
+function att(layerId, srcId, infoFn) {
+  map.on('mouseenter',layerId,()=>{map.getCanvas().style.cursor='pointer';});
+  map.on('mouseleave',layerId,()=>{map.getCanvas().style.cursor='';clrH();if(!S.locked){hideTip();clearPanel();}});
+  map.on('mousemove',layerId,e=>{if(!e.features?.length)return;const f=e.features[0];setH(srcId,f.id);const info=infoFn(f);showTip(e.point,info.name,info.tipSub);if(!S.locked)fillPanel(info,false);});
+  map.on('click',layerId,e=>{if(!e.features?.length)return;const f=e.features[0];if(S.locked&&S.sel.id===f.id&&S.sel.src===srcId){try{map.setFeatureState({source:srcId,id:f.id},{selected:false});}catch(e){}S.locked=false;S.sel={src:null,id:null};clearPanel();}else{if(S.sel.id!=null)try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(e){}S.locked=true;S.sel={src:srcId,id:f.id};try{map.setFeatureState({source:srcId,id:f.id},{selected:true});}catch(e){}fillPanel(infoFn(f),true);}e.preventDefault();});
+}
+
+// TOGGLES
+function toggleCores(on) {
+  coresVis=on; const v=on?'visible':'none';
+  ['lyr-core-fill','lyr-core-line'].forEach(l=>{if(map.getLayer(l))map.setLayoutProperty(l,'visibility',v);});
+  if (on) ['lyr-core-fill','lyr-core-line'].forEach(l=>{try{map.moveLayer(l);}catch(e){}});
+}
+function toggleBrgyBorder(on) {
+  brgyVis=on;
+  if (map.getLayer('lyr-brgy-out')) map.setLayoutProperty('lyr-brgy-out','visibility',on?'visible':'none');
+  if (on) try{map.moveLayer('lyr-brgy-out');}catch(e){}
+}
+
+// TOOLTIP
+function showTip(pt, name, sub) {
+  const t=document.getElementById('tip');
+  document.getElementById('tip-name').textContent=name||'-';
+  document.getElementById('tip-sub').textContent=sub||'';
+  const W=window.innerWidth;
+  t.style.left=(pt.x+16+220>W?pt.x-228:pt.x+14)+'px';
+  t.style.top=Math.max(pt.y-10,4)+'px';
+  t.style.display='block';
+}
+function hideTip() { document.getElementById('tip').style.display='none'; }
+
+// SCALE
+const ALL = ['lyr-brgy-fill','lyr-brgy-line',...HLYR.map(c=>c.layerId),...CLYR.map(c=>c.layerId),'lyr-road','lyr-road-hit','lyr-road-rel','lyr-rlbl-pri','lyr-rlbl-loc'];
+function pickScale(scale, el) {
+  document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  applyScale(scale);
+}
+function applyScale(scale) {
+  S.scale=scale; rstSel();
+  // Always clear hex/cluster and brgy feature states fully on any scale switch
+  HLYR.forEach(cfg=>{try{map.removeFeatureState({source:cfg.srcId});}catch(e){}});
+  CLYR.forEach(cfg=>{try{map.removeFeatureState({source:cfg.srcId});}catch(e){}});
+  try{map.removeFeatureState({source:'src-brgy'});}catch(e){}
+  ALL.forEach(l=>{if(map.getLayer(l))map.setLayoutProperty(l,'visibility','none');});
+  if (coresVis) ['lyr-core-fill','lyr-core-line'].forEach(l=>{if(map.getLayer(l))map.setLayoutProperty(l,'visibility','visible');});
+  if (brgyVis&&map.getLayer('lyr-brgy-out')) map.setLayoutProperty('lyr-brgy-out','visibility','visible');
+  if (scale==='barangay-scale') { ['lyr-brgy-fill','lyr-brgy-line'].forEach(sh); document.getElementById('hex-sub').style.display='none'; hideLDesc(); hideCityLeft(); }
+  else if (scale==='hex-scale') { document.getElementById('hex-sub').style.display='block'; applyHex(S.hexKey); }
+  else if (scale==='road-scale') { ['lyr-road','lyr-road-rel','lyr-rlbl-pri','lyr-rlbl-loc'].forEach(sh); if(map.getLayer('lyr-road-hit'))sh('lyr-road-hit'); document.getElementById('hex-sub').style.display='none'; hideLDesc(); hideCityLeft(); }
+  ['lyr-brgy-out','lyr-brgy-lbl','lyr-core-fill','lyr-core-line'].forEach(l=>{try{map.moveLayer(l);}catch(e){}});
+  const sd=SCALE_DESC[scale]; document.getElementById('sd-title').textContent=sd.title; document.getElementById('sd-body').textContent=sd.body;
+  updLgnd();
+}
+function rstSel() {
+  if(S.sel.id!=null)try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(e){};
+  S.locked=false; S.sel={src:null,id:null}; clearPanel(); hideTip();
+  try{map.setFilter('lyr-brgy-out',null);map.setLayoutProperty('lyr-brgy-out','visibility',brgyVis?'visible':'none');}catch(e){}
+}
+const sh = l => { if(map.getLayer(l))map.setLayoutProperty(l,'visibility','visible'); };
+
+// HEX
+function buildHexBtns() {
+  const w = document.getElementById('hex-btns'); let h = '';
+  HLYR.forEach(cfg => {
+    const d = cfg.isCat ? `background:linear-gradient(90deg,${Object.values(POLICY_ZONES).map(z=>z.color).join(',')})` : `background:linear-gradient(90deg,${cfg.colors.slice(0,5).join(',')})`;
+    h += `<button class="hlyr-btn${cfg.key==='density'?' active':''}" id="hbtn-${cfg.key}" data-key="${cfg.key}" onclick="pickH(this.dataset.key)"><span class="ldot" style="${d}"></span>${cfg.label}</button>`;
+  });
+  h += `<div style="font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);padding:7px 0 3px;margin-top:3px;border-top:1px solid var(--border)">Cluster Types</div>`;
+  const cd={pinch:'#d7301f',corr:'#2171b5',trans:'#fc8d59',iso:'#6baed6',dead:'#bdbdbd'};
+  CLYR.forEach(cfg => { h+=`<button class="hlyr-btn" id="hbtn-c_${cfg.key}" data-key="c_${cfg.key}" onclick="pickH(this.dataset.key)"><span class="ldot" style="background:${cd[cfg.key]||'#888'};border-radius:50%"></span>${cfg.label}</button>`; });
+  w.innerHTML = h;
+}
+function pickH(key) {
+  document.querySelectorAll('.hlyr-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('hbtn-'+key)?.classList.add('active');
+  S.hexKey=key; applyHex(key);
+}
+function applyHex(key) {
+  HLYR.forEach(c=>{if(map.getLayer(c.layerId))map.setLayoutProperty(c.layerId,'visibility','none');});
+  CLYR.forEach(c=>{if(map.getLayer(c.layerId))map.setLayoutProperty(c.layerId,'visibility','none');});
+  const isC=key.startsWith('c_'); let desc='', lbl='';
+  if (isC) { const ck=key.replace('c_',''); const cfg=CLYR.find(c=>c.key===ck); if(cfg){sh(cfg.layerId);desc=cfg.desc;lbl=cfg.label;} }
+  else { const cfg=HLYR.find(c=>c.key===key); if(cfg){sh(cfg.layerId);desc=cfg.desc;lbl=cfg.label;} }
+  if (desc) showLDesc(lbl,desc); else hideLDesc();
+  ['lyr-brgy-out','lyr-brgy-lbl','lyr-core-fill','lyr-core-line'].forEach(l=>{try{map.moveLayer(l);}catch(e){}});
+  updLgnd();
+}
+
+// CLUSTER LEGEND
+const CTA = {hot99:true,hot95:true,hot90:true,cold99:true,cold95:true,cold90:true};
+function tLgndC(tier) {
+  CTA[tier]=!CTA[tier];
+  const row=document.getElementById('cf-'+tier);
+  if(row){row.classList.toggle('off',!CTA[tier]);const cb=row.querySelector('input');if(cb)cb.checked=CTA[tier];}
+  rebuildCC();
+}
+function rebuildCC() {
+  const z=['to-number',['get','Z-score'],0],p=['to-number',['get','p-value'],1],C=CTA;
+  const e=['case',['all',['>=',z,2.58],['<=',p,0.01]],C.hot99?'#67000d':'rgba(0,0,0,0)',['all',['>=',z,1.96],['<=',p,0.05]],C.hot95?'#d7301f':'rgba(0,0,0,0)',['all',['>=',z,1.65],['<=',p,0.10]],C.hot90?'#fc8d59':'rgba(0,0,0,0)',['all',['<=',z,-2.58],['<=',p,0.01]],C.cold99?'#08306b':'rgba(0,0,0,0)',['all',['<=',z,-1.96],['<=',p,0.05]],C.cold95?'#2171b5':'rgba(0,0,0,0)',['all',['<=',z,-1.65],['<=',p,0.10]],C.cold90?'#6baed6':'rgba(0,0,0,0)','#bdbdbd'];
+  CLYR.forEach(cfg=>{if(map.getLayer(cfg.layerId))map.setPaintProperty(cfg.layerId,'fill-color',e);});
+}
+
+function updLgnd() {
+  const b=document.getElementById('lgnd-body');
+  const hTip='Getis-Ord Gi* spatial cluster of HIGH values. This cell and its neighbors have significantly higher values than expected by chance. Confidence level indicates statistical certainty.';
+  const cTip='Getis-Ord Gi* spatial cluster of LOW values. This cell and its neighbors have significantly lower values than expected by chance.';
+  if (S.scale==='barangay-scale') {
+    b.innerHTML=`<div class="lgnd-sec"><div class="lgnd-row"><div class="ls" style="background:#3a7fbf;opacity:.55;border-radius:50%"></div>Barangay</div><div class="lgnd-row"><div class="lsl" style="background:#555;height:3px"></div>Boundary</div></div>`;
+  } else if (S.scale==='road-scale') {
+    b.innerHTML=`<div class="lgnd-sec"><div class="lgnd-row"><div class="lsl" style="background:#1a9e6e;height:5px"></div>Relevant Road</div><div class="lgnd-row"><div class="lsl" style="background:#d0d4d9;height:5px"></div>Road</div></div>`;
+  } else if (S.scale==='hex-scale') {
+    const key=S.hexKey, isC=key.startsWith('c_');
+    if (isC) {
+      b.innerHTML=`<div class="lgnd-sec"><div class="lgnd-lbl">Hotspots ${qmark(hTip)}</div><div class="lgnd-tgl" id="cf-hot99" onclick="tLgndC('hot99')"><input type="checkbox" checked><div class="lsc" style="background:#67000d"></div>99%</div><div class="lgnd-tgl" id="cf-hot95" onclick="tLgndC('hot95')"><input type="checkbox" checked><div class="lsc" style="background:#d7301f"></div>95%</div><div class="lgnd-tgl" id="cf-hot90" onclick="tLgndC('hot90')"><input type="checkbox" checked><div class="lsc" style="background:#fc8d59"></div>90%</div></div><div class="lgnd-sec"><div class="lgnd-lbl">Coldspots ${qmark(cTip)}</div><div class="lgnd-tgl" id="cf-cold99" onclick="tLgndC('cold99')"><input type="checkbox" checked><div class="lsc" style="background:#08306b"></div>99%</div><div class="lgnd-tgl" id="cf-cold95" onclick="tLgndC('cold95')"><input type="checkbox" checked><div class="lsc" style="background:#2171b5"></div>95%</div><div class="lgnd-tgl" id="cf-cold90" onclick="tLgndC('cold90')"><input type="checkbox" checked><div class="lsc" style="background:#6baed6"></div>90%</div></div><div class="lgnd-sec"><div class="lgnd-row"><div class="lsc" style="background:#bdbdbd"></div>Not Significant</div></div>`;
+    } else {
+      const cfg=HLYR.find(c=>c.key===key); if(!cfg)return;
+      if (cfg.isCat) {
+        const rows=Object.entries(POLICY_ZONES).map(([k,z])=>`<div class="lgnd-tgl${activePZ.has(k)?'':' off'}" onclick="onPZClick('${k}',this)"><input type="checkbox" ${activePZ.has(k)?'checked':''}><div class="ls" style="background:${z.color}"></div>${k}</div>`).join('');
+        b.innerHTML=`<div class="lgnd-sec"><div class="lgnd-lbl">Policy Zone</div>${rows}</div>`;
+      } else {
+        const st=FS[cfg.srcId]?.[cfg.field];
+        b.innerHTML=`<div class="lgnd-sec"><div class="lgnd-lbl">${cfg.label}</div><div class="grad-bar" style="background:linear-gradient(to right,${cfg.colors.join(',')});width:150px"></div><div class="grad-labs" style="width:150px"><span>${st?fmt(st.min):'Low'}</span><span>${st?fmt(st.max):'High'}</span></div></div>`;
+      }
+    }
+  }
+}
+function setMsg(t){ /* logo-only loader */ }
+
+</script>
+</body>
+</html>
