@@ -461,140 +461,44 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 #home-left .h-mid,#home-left .h-study,#home-left #home-logo-top{pointer-events:all}
 
 
+
+
+
+
+
+
+
+
+/* ═══════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════
+   LOADING SCREEN — deterministic, CSS-eased progress fill
+══════════════════════════════════════════════════════════ */
 #loader {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 22px;
-  /* Transition for fade-out */
-  transition: opacity 0.8s ease;
-}
-#loader.out {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* White background */
-#ldr-bg {
-  position: absolute;
-  inset: 0;
-  background: #FFFFFF;
-  z-index: 0;
-}
-
-/* Logo container — both SVG layers are stacked here */
-#ldr-logo-wrap {
-  position: relative;
-  width: 280px;
-  height: 280px;
-  z-index: 1;
-  flex-shrink: 0;
-}
-
-/* Layer 1: empty frame SVG */
-#ldr-frame1 {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 2; /* on top of fill */
-}
-
-/* Layer 2: masked gradient fill */
-#ldr-fill-mask {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
-  /* loadingframe2.svg defines exact logo shape */
-  -webkit-mask-image: url('loadingframe2.svg');
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-  mask-image: url('loadingframe2.svg');
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-}
-
-/* The actual gradient fill bar — rises bottom to top */
-#ldr-fill-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  /* Height controlled by JS: 0% → 100% */
-  height: 0%;
-  background: linear-gradient(to right, #004EC4 0%, #008F4C 100%);
-  transition: height 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Percentage counter */
-#ldr-pct {
-  position: relative;
-  z-index: 1;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: #1E2022;
-  min-width: 40px;
-  text-align: center;
-}
-/* ══════════════════════════════════════════════ */
-
-/* ══════════════════════════════════════════════
-   LOADING SCREEN — liquid fill with wave
-══════════════════════════════════════════════ */
-#loader {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.8s ease;
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.7s ease 0.2s;
 }
 #loader.out { opacity: 0; pointer-events: none; }
 
-#ldr-bg {
-  position: absolute;
-  inset: 0;
-  background: #FFFFFF;
-  z-index: 0;
-}
+/* White background */
+#ldr-bg { position: absolute; inset: 0; background: #fff; z-index: 0; }
 
-/* Logo container — all layers stack here */
+/* Fixed-size logo container */
 #ldr-logo-wrap {
-  position: relative;
-  width: 420px;
-  height: 420px;
-  z-index: 1;
+  position: relative; width: 420px; height: 420px; z-index: 1;
 }
 
-/* Gray base logo — always visible underneath */
+/* Gray base: always-visible silhouette */
 #ldr-gray {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 1;
-  /* Render logo in gray */
-  filter: grayscale(1) brightness(0.75) opacity(0.35);
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; z-index: 1;
+  filter: grayscale(1) brightness(0.68) opacity(0.30);
 }
 
-/* Masked fill container — clips fill to logo shape */
+/* Masked fill container — gradient only shows inside logo shape */
 #ldr-fill-mask {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  overflow: hidden;
+  position: absolute; inset: 0; z-index: 2; overflow: hidden;
   -webkit-mask-image: url('loadingframe2.svg');
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
@@ -605,44 +509,25 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
   mask-size: contain;
 }
 
-/* The fill bar — rises from bottom */
+/* The fill bar — rises from bottom.
+   CSS handles ALL easing; JS only sets the target height.
+   cubic-bezier(0.4, 0, 0.2, 1) = Material Design "standard" easing
+   — fast out, gentle deceleration. Duration scales with distance. */
 #ldr-fill-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: absolute; bottom: 0; left: 0; right: 0;
   height: 0%;
   background: linear-gradient(to right, #004EC4 0%, #008F4C 100%);
-  transition: none;
-  overflow: hidden;
+  /* Initial transition for first surge */
+  transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: height;
 }
 
-
-
-
-
-
-
-
-
-
-  100% { transform: translateX(-20%); }
-}
-
-/* Frame SVG on top — the crisp outline / frame */
+/* Outline frame on top — gives the crisp logo edge */
 #ldr-frame1 {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 3;
-  pointer-events: none;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; z-index: 3; pointer-events: none;
 }
-
-/* Remove old pct if still referenced */
-#ldr-pct { display: none !important; }
-/* ══════════════════════════════════════════════ */
+/* ═════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -667,19 +552,10 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 </div>
 <div id="zoom-fade"></div>
 <div id="loader">
-  <!-- White background -->
   <div id="ldr-bg"></div>
-
-  <!-- Logo assembly -->
   <div id="ldr-logo-wrap">
-    <!-- Layer 1: gray base logo (always visible, acts as empty state) -->
     <img src="loadingframe2.svg" id="ldr-gray" alt="" onerror="this.style.display='none'">
-    <!-- Layer 2: gradient fill with wave, masked to logo shape -->
-    <div id="ldr-fill-mask">
-      <div id="ldr-fill-bar">
-</div>
-    </div>
-    <!-- Layer 3: outline/frame SVG on top -->
+    <div id="ldr-fill-mask"><div id="ldr-fill-bar"></div></div>
     <img src="loadingframe1.svg" id="ldr-frame1" alt="" onerror="this.style.display='none'">
   </div>
 </div>
@@ -1032,16 +908,12 @@ function toWGS(gj) {
   (g.features||[]).forEach(f => { if(f?.geometry) f.geometry.coordinates = cv(f.geometry.coordinates, f.geometry.type); });
   return g;
 }
-async function loadGJ(file, onProgress) {
-  return fetchWithProgress(file, onProgress)
-    .then(raw => {
-      const crs = sniff(raw);
-      return { data: crs==='UTM' ? toWGS(raw) : raw, ok:true, crs };
-    })
-    .catch(e => {
-      console.warn('[load]', file, e.message);
-      return { data:{type:'FeatureCollection',features:[]}, ok:false, crs:'err' };
-    });
+async function loadGJ(file) {
+  try {
+    const r = await fetch(file); if (!r.ok) throw new Error('HTTP ' + r.status);
+    const raw = await r.json(); const crs = sniff(raw);
+    return { data: crs==='UTM' ? toWGS(raw) : raw, ok:true, crs };
+  } catch(e) { console.warn('[load]', file, e.message); return { data:{type:'FeatureCollection',features:[]}, ok:false, crs:'err' }; }
 }
 function calcSt(feats, prop) {
   const vals = feats.map(f=>{const v=f.properties?.[prop];return typeof v==='number'?v:parseFloat(v);}).filter(v=>isFinite(v)&&!isNaN(v));
@@ -1114,93 +986,64 @@ map.on('zoomend', () => {
 });
 
 // MAIN LOAD
+// ═══ Loader — determinate CSS-eased progress fill ════════════
+//
+// How it works:
+//   1. Each GeoJSON fetch completion calls setLoaderProgress(n/total)
+//   2. setLoaderProgress() sets #ldr-fill-bar height via CSS
+//   3. CSS transition (cubic-bezier) handles ALL easing — no RAF needed
+//   4. Duration is computed proportional to the step size so small
+//      steps still look smooth and large steps don't drag
+//   5. map.once('idle') triggers _loaderFinish() for the final push
+//
+let _ldrCurrentPct  = 0;   // last height we set (0–100)
+let _ldrFinished    = false;
+let _loaderPct      = 0;   // exposed for any other code that reads it
 
-// ── Loading screen progress controller ──────────────────────────
-let _loaderPct = 0;
-
-// ── Smooth continuous fill animation ──────────────────────
-// Actual download progress drives a target.
-// A constant RAF loop eases the visual fill toward the target
-// with a gentle velocity model — no jumps, no cuts, flat surface.
-let _fillTarget = 0;
-let _fillCurrent = 0;
-let _fillVelocity = 0;
-let _fillRafId = null;
+function _ldrSetHeight(pct, durationMs) {
+  const bar = document.getElementById('ldr-fill-bar');
+  if (!bar) return;
+  // Update CSS transition duration for this specific step
+  bar.style.transition = `height ${durationMs}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+  bar.style.height = pct.toFixed(2) + '%';
+  _ldrCurrentPct = pct;
+}
 
 function setLoaderProgress(ratio) {
-  _fillTarget = Math.min(1, Math.max(0, ratio));
-  _loaderPct  = _fillTarget;
-  if (!_fillRafId) _fillRafId = requestAnimationFrame(_tickFill);
+  if (_ldrFinished) return;
+  const targetPct = Math.min(95, ratio * 92);  // cap at 95% — final 5% for map render
+  if (targetPct <= _ldrCurrentPct) return;
+  const delta = targetPct - _ldrCurrentPct;
+  // Duration: ~18ms per 1% of fill, min 400ms, max 1600ms
+  const dur = Math.max(400, Math.min(1600, delta * 18));
+  _loaderPct = ratio;
+  _ldrSetHeight(targetPct, dur);
 }
 
-function _tickFill() {
-  // Spring-based easing: accelerates toward target, decelerates on approach
-  const stiffness = 0.04;  // how fast it chases target
-  const damping   = 0.72;  // smoothness (lower = more glide)
-  const dist = _fillTarget - _fillCurrent;
-  _fillVelocity = _fillVelocity * damping + dist * stiffness;
-  _fillCurrent  = Math.min(_fillTarget, _fillCurrent + _fillVelocity);
-
-  const bar = document.getElementById('ldr-fill-bar');
-  if (bar) bar.style.height = (_fillCurrent * 100).toFixed(3) + '%';
-
-  if (Math.abs(_fillTarget - _fillCurrent) > 0.0003) {
-    _fillRafId = requestAnimationFrame(_tickFill);
-  } else {
-    _fillCurrent = _fillTarget;
-    if (bar) bar.style.height = (_fillCurrent * 100).toFixed(3) + '%';
-    _fillRafId = null;
-  }
+function _loaderFinish() {
+  if (_ldrFinished) return;
+  _ldrFinished = true;
+  // Final push to 100% with a smooth 900ms ease
+  _ldrSetHeight(100, 900);
+  // Fade out after fill completes
+  setTimeout(() => {
+    const l = document.getElementById('loader');
+    if (l) { l.classList.add('out'); setTimeout(() => l.style.display = 'none', 900); }
+  }, 1000);
 }
 
-// Fetch with byte-level progress tracking
-async function fetchWithProgress(url, onProgress) {
-  try {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const total = parseInt(resp.headers.get('content-length') || '0', 10);
-    const reader = resp.body.getReader();
-    const chunks = [];
-    let loaded = 0;
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value);
-      loaded += value.length;
-      if (total > 0 && onProgress) onProgress(loaded / total);
-    }
-    const blob = new Blob(chunks);
-    const text = await blob.text();
-    return JSON.parse(text);
-  } catch (e) {
-    // Fallback: plain fetch without progress
-    const resp = await fetch(url);
-    if (!resp.ok) return { type: 'FeatureCollection', features: [] };
-    return await resp.json();
-  }
-}
-// ─────────────────────────────────────────────────────────────────
+// Initial "breathing" surge on page load — shows immediately
+// so the bar is already visibly started before data arrives
+setTimeout(() => _ldrSetHeight(8, 1400), 0);
+setTimeout(() => _ldrSetHeight(14, 1000), 1600);
+// ═══════════════════════════════════════════════════════════════
+
 
 map.on('load', async () => {
   setMsg('Fetching GeoJSON...');
-  // Real byte-level progress tracking across all GeoJSON files
-  const _tot = MFST.length;
-  // Per-file progress buckets (0.0–1.0 each)
-  const _fileProgress = new Array(_tot).fill(0);
-  const _fileWeight = 1 / _tot; // each file = equal weight
-  // GeoJSON fetches = 85% of total progress; MapLibre render = last 15%
-  const FETCH_SHARE = 0.85;
-
-  function updateProgress() {
-    const fetchAvg = _fileProgress.reduce((s, v) => s + v, 0) / _tot;
-    setLoaderProgress(fetchAvg * FETCH_SHARE);
-  }
-
-  const results = await Promise.all(MFST.map(([f], idx) =>
-    loadGJ(f, p => {
-      _fileProgress[idx] = p;
-      updateProgress();
-    })
+  const _tot=MFST.length; let _done=0;
+  const results = await Promise.all(MFST.map(([f]) =>
+    loadGJ(f).then(r => { _done++; setLoaderProgress(_done/_tot); return r; })
   ));
   MFST.forEach(([,srcId],i) => {
     GD[srcId] = results[i].data; FS[srcId] = {};
@@ -1421,26 +1264,9 @@ function clearBrgyHover() {
   });
 
   buildHexBtns(); buildBrgyDD(); applyScale('barangay-scale');
-  // Layers built — push to 95% while waiting for MapLibre 'idle'
-  setLoaderProgress(0.95);
-  map.once('idle', () => {
-    setLoaderProgress(1.0);
-    setTimeout(() => {
-      const l = document.getElementById('loader');
-      if (l) {
-        l.classList.add('out');
-        setTimeout(() => { l.style.display = 'none'; }, 800);
-      }
-    }, 350);
-  });
-  // Safety fallback: hide loader after 5s regardless
-  setTimeout(() => {
-    const l = document.getElementById('loader');
-    if (l && l.style.display !== 'none') {
-      setLoaderProgress(1.0);
-      setTimeout(() => { l.classList.add('out'); setTimeout(()=>l.style.display='none',800); }, 300);
-    }
-  }, 5000);
+  setLoaderProgress(1.0);   // all GeoJSON done
+  map.once('idle', () => _loaderFinish());
+  setTimeout(() => { if (!_ldrFinished) _loaderFinish(); }, 5000);
   // Keep scale bar hidden until enterMap
   const _scCtrl=document.querySelector('.maplibregl-ctrl-bottom-right');
   if(_scCtrl && homeVisible) _scCtrl.classList.add('offscreen');
@@ -1836,7 +1662,7 @@ function updLgnd() {
     }
   }
 }
-function setMsg(t){ /* loader is progress-fill only */ }
+function setMsg(t){ /* logo-only loader */ }
 
 </script>
 
@@ -2041,6 +1867,6 @@ function closeGuide() {
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeGuide(); });
 </script>
 
-<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="GeoCite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
+<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="geocite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
 </body>
 </html>
