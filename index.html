@@ -4,27 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ecological Green Network</title>
-<link href="maplibre-gl.css" rel="stylesheet"/>
-<script src="maplibre-gl.js"></script>
-<script src="proj4.js"></script>
-<script src="turf.min.js"></script>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 #home{position:absolute;inset:0;z-index:200;display:flex;transition:opacity .7s}
 #home.fade-out{opacity:0;pointer-events:none}
-#home-left{width:46%;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:60px 60px;background:linear-gradient(to right,#fff 0%,#fff 45%,rgba(255,255,255,0.5) 70%,rgba(255,255,255,0) 100%);overflow:hidden;transition:opacity 0.4s ease}
+#home-left{width:100%;height:100%;position:absolute;left:0;top:0;z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding:40px 60px;background:linear-gradient(to right,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 20%,rgba(255,255,255,0) 60%);pointer-events:none}
 #home-left::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,0.05) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
 #home-right{flex:1;position:relative;z-index:1}
 #home-right-fade{position:absolute;inset:0;background:linear-gradient(to right,rgba(240,246,244,0.10) 0%,transparent 40%);pointer-events:none;z-index:2}
 
-#home-logo-top{height:80px;object-fit:contain;margin-bottom:22px;margin-top:-100px;opacity:0.92;align-self:flex-start}
+#home-logo-top{height:56px;width:auto;object-fit:contain;opacity:0.92;align-self:flex-start;flex-shrink:0;margin-bottom:12px}
 
 .h-title{font-family:'Inter',sans-serif;font-size:3.6rem;font-weight:700;color:var(--tx1);line-height:1.08;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:12px}
 .h-title em{color:var(--acc);font-style:normal}
-.h-location{font-size:1.25rem;color:var(--tx2);margin-bottom:6px;letter-spacing:.03em;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
-.h-study{display:flex;align-items:center;gap:7px;margin-bottom:46px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.85rem;color:var(--tx2);letter-spacing:.05em}
+.h-location{font-size:1.1rem;color:var(--tx2);margin-bottom:32px;letter-spacing:.03em;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.h-study{display:flex;align-items:center;gap:7px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.85rem;color:var(--tx2);letter-spacing:.05em;flex-shrink:0}
 .h-logo{height:18px;object-fit:contain;vertical-align:middle;opacity:.75}
-#enter-btn{display:inline-flex;align-items:center;gap:11px;padding:16px 38px;background:var(--acc);color:#fff;border:none;border-radius:50px;font-size:1rem;font-weight:600;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;box-shadow:0 4px 24px rgba(26,158,110,0.38);transition:all .22s;letter-spacing:.02em;width:fit-content}
+#enter-btn{display:inline-flex;align-items:center;gap:11px;padding:14px 32px;background:var(--acc);color:#fff;border:none;border-radius:50px;font-size:.9rem;font-weight:600;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;box-shadow:0 4px 24px rgba(26,158,110,0.38);transition:all .22s;letter-spacing:.02em;width:fit-content;margin-bottom:14px}
 #enter-btn:hover{background:#0d7a53;transform:translateY(-2px);box-shadow:0 6px 32px rgba(26,158,110,0.52)}
 #enter-btn svg{width:17px;height:17px;flex-shrink:0}
 
@@ -80,15 +81,15 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 #zoom-fade{position:absolute;inset:0;z-index:5;background:#fff;opacity:0;pointer-events:none;transition:opacity .3s}
 
 /* LOADER */
-#loader{position:absolute;inset:0;z-index:300;background:#f5f7f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
-#loader.out{opacity:0;pointer-events:none}
+
+
 .spin{width:40px;height:40px;border:3px solid rgba(26,158,110,.15);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #loader-msg{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--acc-d);letter-spacing:.1em;text-transform:uppercase}
 
 /* Q-TIP */
 #q-tip{position:fixed;z-index:9999;display:none;pointer-events:none;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:8px 11px;font-size:.71rem;color:var(--tx2);line-height:1.6;max-width:220px;box-shadow:0 4px 20px rgba(0,0,0,.14)}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:visible}
 .psec{padding:11px 13px;border-bottom:1px solid var(--border)}.psec:last-child{border-bottom:none}
 .plabel{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
 
@@ -112,7 +113,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 
 
 /* LEFT */
-#left-col{position:absolute;top:77px;left:14px;width:252px;z-index:10;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
+#left-col{position:absolute;top:77px;left:14px;width:252px;z-index:10;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:visible;padding-bottom:4px}
 #left-col::-webkit-scrollbar{width:3px}#left-col::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:2px}
 .map-eyebrow{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
 .map-title{font-family:'Space Mono',monospace;font-size:1.02rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--tx1);line-height:1.2;margin-bottom:4px}
@@ -192,7 +193,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 .tip-sub{font-size:.63rem;color:var(--acc);margin-top:1px}
 .maplibregl-ctrl-group{background:rgba(255,255,255,.97)!important;border:1px solid var(--border)!important;box-shadow:var(--shadow)!important}
 .maplibregl-ctrl-group button{color:var(--tx2)!important}
-.maplibregl-ctrl-attrib{background:rgba(255,255,255,.88)!important;color:var(--tx2)!important;font-size:10px!important}
+.maplibregl-ctrl-attrib{display:none!important}
 /* Slide-in animations for UI panels */
 #left-col{transition:transform 0.65s cubic-bezier(0.22,1,0.36,1),opacity 0.5s ease}
 #left-col.offscreen{transform:translateX(-110%);opacity:0}
@@ -226,10 +227,10 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 #rp{border-radius:5px!important;box-shadow:0 4px 22px rgba(0,0,0,.20),0 1px 6px rgba(0,0,0,.12)!important}
 #toggle-group{border-radius:5px!important;box-shadow:0 4px 22px rgba(0,0,0,.20),0 1px 6px rgba(0,0,0,.12)!important}
 #q-tip{z-index:99999!important}
-#loader-logo{height:180px;object-fit:contain;margin-bottom:16px}
+
 50%{opacity:1.0}}
 #loader-msg{display:none!important}
-#home-left{transition:transform 0.42s cubic-bezier(0.22,1,0.36,1),opacity 0.35s ease!important}
+#home-left{width:100%;height:100%;position:absolute;left:0;top:0;z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding:40px 60px;background:linear-gradient(to right,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 20%,rgba(255,255,255,0) 60%);pointer-events:none}
 #left-col,#right-col{transition:transform 0.4s cubic-bezier(0.645,0.045,0.355,1),opacity 0.4s ease!important}
 #top-nav,#bottom-center{transition:transform 0.4s cubic-bezier(0.645,0.045,0.355,1),opacity 0.4s ease!important}
 
@@ -249,8 +250,8 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
   right:14px!important;
 }
 
-#loader-bar-wrap{width:200px;height:4px;background:rgba(26,158,110,0.15);border-radius:2px;overflow:hidden;margin-top:4px}
-#loader-bar{height:100%;width:0%;background:var(--acc);border-radius:2px;transition:width 0.25s ease}
+
+
 
 /* ─ Fonts ─ */
 body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-family:'Inter',sans-serif}
@@ -269,24 +270,419 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 #brgy-pulse-overlay{display:none;position:absolute;inset:0;pointer-events:none;z-index:5}
 
 #rp-badge:empty{display:none!important}
+
+/* ─── Guide Panel ─────────────────────────────────── */
+#guide-panel{
+  position:fixed;top:0;right:0;width:420px;max-width:95vw;height:100vh;
+  background:#fff;z-index:1000;
+  box-shadow:-6px 0 32px rgba(0,0,0,0.18);
+  display:flex;flex-direction:column;
+  transform:translateX(110%);
+  transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+#guide-panel.open{transform:translateX(0)}
+#guide-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 22px 14px;
+  border-bottom:1px solid rgba(0,0,0,0.10);
+  flex-shrink:0;
+}
+#guide-panel-header h2{
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-size:1rem;font-weight:700;margin:0;color:#000;letter-spacing:.02em;
+}
+#guide-close{
+  background:none;border:none;cursor:pointer;font-size:1.4rem;
+  color:rgba(0,0,0,0.45);line-height:1;padding:2px 4px;
+  transition:color .15s;
+}
+#guide-close:hover{color:#000}
+#guide-scroll{
+  flex:1;overflow-y:auto;padding:22px 22px 0;
+  scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent;
+}
+#guide-scroll::-webkit-scrollbar{width:4px}
+#guide-scroll::-webkit-scrollbar-track{background:transparent}
+#guide-scroll::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:2px}
+.guide-desc{
+  font-size:.84rem;line-height:1.75;color:#333;
+  padding-bottom:22px;border-bottom:1px solid rgba(0,0,0,0.08);margin-bottom:22px;
+}
+.guide-desc strong{color:#000}
+.guide-desc em{color:var(--acc);font-style:normal}
+.guide-steps-title{
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-size:.7rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(0,0,0,0.38);margin-bottom:16px;
+}
+.guide-step{
+  display:flex;gap:14px;margin-bottom:18px;align-items:flex-start;
+}
+.guide-step-num{
+  flex-shrink:0;width:24px;height:24px;border-radius:50%;
+  background:var(--acc);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:700;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  margin-top:1px;
+}
+.guide-step-body{}
+.guide-step-title{
+  font-size:.82rem;font-weight:700;color:#000;margin-bottom:3px;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+.guide-step-text{font-size:.78rem;line-height:1.65;color:#444;}
+.guide-step-text strong{color:#000}
+#guide-footer{
+  padding:18px 22px 22px;flex-shrink:0;
+  border-top:1px solid rgba(0,0,0,0.08);background:#fff;
+}
+#guide-start-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:14px 20px;
+  background:var(--acc);color:#fff;border:none;border-radius:50px;
+  font-size:.88rem;font-weight:600;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  cursor:pointer;letter-spacing:.02em;
+  box-shadow:0 4px 20px rgba(26,158,110,0.30);
+  transition:all .22s;
+}
+#guide-start-btn:hover{background:#0d7a53;transform:translateY(-1px)}
+#guide-start-btn svg{width:15px;height:15px;flex-shrink:0}
+/* Need a guide? link */
+#guide-link{display:inline-block;margin-top:14px;text-align:left;align-self:flex-start;font-size:.8rem;color:rgba(0,0,0,0.50);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;text-decoration:none;letter-spacing:.01em;transition:color .18s;background:none;border:none;padding:0;position:relative;z-index:210}
+#guide-link:hover{color:var(--acc);text-decoration:underline}
+/* Backdrop */
+#guide-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,0.25);
+  z-index:999;opacity:0;transition:opacity .4s;
+  pointer-events:none;
+}
+#guide-backdrop.open{opacity:1;pointer-events:all}
+
+
+/* ─── Guide collapsible sections ──────────────────── */
+.g-section{border-bottom:1px solid rgba(0,0,0,0.07);overflow:hidden}
+.g-section:last-child{border-bottom:none}
+.g-section-hdr{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;background:none;border:none;cursor:pointer;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-size:.82rem;font-weight:700;color:#000;text-align:left;
+  transition:color .15s;gap:10px;
+}
+.g-section-hdr:hover{color:var(--acc)}
+.g-section-hdr.open .g-chevron{transform:rotate(180deg)}
+.g-chevron{width:16px;height:16px;flex-shrink:0;transition:transform .25s cubic-bezier(0.22,1,0.36,1);color:rgba(0,0,0,0.35)}
+.g-section-hdr:hover .g-chevron{color:var(--acc)}
+.g-section-body{padding-bottom:14px}
+.g-text{
+  font-size:.79rem;line-height:1.72;color:#444;margin:0 0 10px;
+}
+.g-text:last-child{margin-bottom:0}
+.g-text em{color:var(--acc);font-style:normal}
+.g-text strong{color:#000}
+/* Tighten steps inside collapsible */
+.g-section-body .guide-step{margin-bottom:14px}
+.g-section-body .guide-step:last-child{margin-bottom:0}
+
+
+/* ─── Collapsible steps ──────────────────────────── */
+.g-step{border-bottom:1px solid rgba(0,0,0,0.06)}
+.g-step:last-child{border-bottom:none}
+.g-step-hdr{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:10px 0;background:none;border:none;cursor:pointer;
+  text-align:left;transition:color .15s;
+}
+.g-step-hdr:hover .g-step-label{color:var(--acc)}
+.g-step-hdr:hover .g-step-num{background:var(--acc);opacity:0.75}
+.g-step-num{
+  flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--acc);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:700;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  transition:background .15s;
+}
+.g-step-label{
+  flex:1;font-size:.8rem;font-weight:600;color:#000;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  line-height:1.3;
+}
+.g-step-hdr .g-chevron{width:14px;height:14px;flex-shrink:0;color:rgba(0,0,0,0.25);transition:transform .22s cubic-bezier(0.22,1,0.36,1)}
+.g-step-hdr.open .g-chevron{transform:rotate(180deg)}
+.g-step-body{padding:0 0 10px 32px}
+.g-step-body .g-text{font-size:.76rem;line-height:1.68;color:#555;margin:0}
+
+
+/* ─── Guide divider between info and steps ─────── */
+.g-divider-label{
+  margin:18px 0 6px;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-size:.6rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(0,0,0,0.32);
+}
+.g-section-steps{
+  background:rgba(26,158,110,0.04);
+  border-radius:8px;
+  padding:0 12px;
+  border:1px solid rgba(26,158,110,0.14)!important;
+  margin-bottom:4px;
+}
+.g-section-steps .g-section-hdr{
+  color:var(--acc);
+}
+.g-section-steps .g-section-hdr .g-chevron{
+  color:rgba(26,158,110,0.45);
+}
+.g-section-steps .g-section-hdr:hover{
+  color:#0d7a53;
+}
+
+
+#home-left #guide-link{display:inline-block;margin-top:14px;text-align:left;align-self:flex-start;font-size:.8rem;color:rgba(0,0,0,0.50);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;text-decoration:none;letter-spacing:.01em;transition:color .18s;background:none;border:none;padding:0;position:relative;z-index:210}
+
+
+#geocite-overlay{position:fixed;top:14px;left:14px;z-index:20;display:block;text-decoration:none;transition:opacity 0.5s ease;opacity:0;pointer-events:none}
+#geocite-overlay.offscreen{opacity:0;pointer-events:none}
+#geocite-overlay.visible{opacity:1;pointer-events:all}
+#geocite-overlay img{height:40px;width:auto;object-fit:contain;display:block}
+
+.map-guide-link{display:block;width:100%;padding:10px 13px 12px;font-size:.75rem;color:rgba(0,0,0,0.55);position:relative;z-index:50;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;text-decoration:none;letter-spacing:.01em;transition:color .18s;background:#fff;border:none;border-top:1px solid rgba(0,0,0,0.08);text-align:left;sticky-bottom:0}
+.map-guide-link:hover{color:var(--acc)}
+#lp{display:flex;flex-direction:column;min-height:0}
+#attrib-ov{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.48rem;color:rgba(0,0,0,0.5);z-index:2000;pointer-events:none;line-height:1.4;text-align:center;white-space:nowrap}
+#attrib-ov a{color:rgba(0,0,0,0.6);text-decoration:none;pointer-events:all}
+
+#guide-link:hover{color:var(--acc)}
+
+.h-mid{display:flex;flex-direction:column;flex:1;justify-content:center;padding:20px 0;align-items:flex-start}
+
+#home-left .h-mid,#home-left .h-study,#home-left #home-logo-top{pointer-events:all}
+
+
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  /* Transition for fade-out */
+  transition: opacity 0.8s ease;
+}
+#loader.out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* White background */
+#ldr-bg {
+  position: absolute;
+  inset: 0;
+  background: #FFFFFF;
+  z-index: 0;
+}
+
+/* Logo container — both SVG layers are stacked here */
+#ldr-logo-wrap {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* Layer 1: empty frame SVG */
+#ldr-frame1 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2; /* on top of fill */
+}
+
+/* Layer 2: masked gradient fill */
+#ldr-fill-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  /* loadingframe2.svg defines exact logo shape */
+  -webkit-mask-image: url('loadingframe2.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url('loadingframe2.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+/* The actual gradient fill bar — rises bottom to top */
+#ldr-fill-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* Height controlled by JS: 0% → 100% */
+  height: 0%;
+  background: linear-gradient(to right, #004EC4 0%, #008F4C 100%);
+  transition: height 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Percentage counter */
+#ldr-pct {
+  position: relative;
+  z-index: 1;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #1E2022;
+  min-width: 40px;
+  text-align: center;
+}
+/* ══════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════
+   LOADING SCREEN — liquid fill with wave
+══════════════════════════════════════════════ */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+#loader.out { opacity: 0; pointer-events: none; }
+
+#ldr-bg {
+  position: absolute;
+  inset: 0;
+  background: #FFFFFF;
+  z-index: 0;
+}
+
+/* Logo container — all layers stack here */
+#ldr-logo-wrap {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  z-index: 1;
+}
+
+/* Gray base logo — always visible underneath */
+#ldr-gray {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  /* Render logo in gray */
+  filter: grayscale(1) brightness(0.75) opacity(0.35);
+}
+
+/* Masked fill container — clips fill to logo shape */
+#ldr-fill-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  -webkit-mask-image: url('loadingframe2.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url('loadingframe2.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+/* The fill bar — rises from bottom */
+#ldr-fill-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: linear-gradient(to right, #004EC4 0%, #008F4C 100%);
+  transition: none;
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+
+  100% { transform: translateX(-20%); }
+}
+
+/* Frame SVG on top — the crisp outline / frame */
+#ldr-frame1 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Remove old pct if still referenced */
+#ldr-pct { display: none !important; }
+/* ══════════════════════════════════════════════ */
 </style>
 </head>
 <body>
 
 <div id="home">
   <div id="home-left">
-    <img src="wtalogo.png" id="home-logo-top" alt="WTA Labs" onerror="this.style.display='none'">
-    <div class="h-title">Ecological<br><em>Green Network</em></div>
-    <div class="h-location">San Juan and Mandaluyong</div>
-    <div class="h-study">Study by <img src="wtalogo.png" class="h-logo" alt="WTA Labs" onerror="this.style.display='none'"></div>
-    <button id="enter-btn" onclick="enterMap()">Enter Map <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    <!-- TOP: GeoCite logo -->
+    <img src="GeoCite.svg" id="home-logo-top" alt="GeoCite" onerror="this.style.display='none'">
+    <!-- MIDDLE: main content -->
+    <div class="h-mid">
+      <div class="h-title">Ecological<br><em>Green Network</em></div>
+      <div class="h-location">San Juan and Mandaluyong</div>
+      <button id="enter-btn" onclick="enterMap()">Enter Map <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+      <button id="guide-link" onclick="openGuide()">Need a guide?</button>
+    </div>
+    <!-- BOTTOM: Powered by -->
+    <div class="h-study">Powered by <img src="wtalogo.png" class="h-logo" alt="WTA Labs" onerror="this.style.display='none'"></div>
   </div>
   <div id="home-right">
     <div id="home-right-fade"></div>
   </div>
 </div>
 <div id="zoom-fade"></div>
-<div id="loader"><img src="wtalogofull.png" id="loader-logo" alt="" onerror="this.style.display='none'"><div id="loader-bar-wrap"><div id="loader-bar"></div></div></div>
+<div id="loader">
+  <!-- White background -->
+  <div id="ldr-bg"></div>
+
+  <!-- Logo assembly -->
+  <div id="ldr-logo-wrap">
+    <!-- Layer 1: gray base logo (always visible, acts as empty state) -->
+    <img src="loadingframe2.svg" id="ldr-gray" alt="" onerror="this.style.display='none'">
+    <!-- Layer 2: gradient fill with wave, masked to logo shape -->
+    <div id="ldr-fill-mask">
+      <div id="ldr-fill-bar">
+</div>
+    </div>
+    <!-- Layer 3: outline/frame SVG on top -->
+    <img src="loadingframe1.svg" id="ldr-frame1" alt="" onerror="this.style.display='none'">
+  </div>
+</div>
 <div id="map"></div>
 <div id="q-tip"></div>
 
@@ -328,6 +724,7 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
         <div class="city-note" id="city-note"></div>
       </div>
     </div>
+    <button class="map-guide-link" onclick="openGuide()">Need a guide?</button>
   </div>
   <div class="panel"><div class="psec"><div class="sd-title" id="sd-title">-</div><div class="sd-body" id="sd-body"></div></div></div>
   <div class="panel" id="hex-sub" style="display:none">
@@ -348,7 +745,11 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 <div id="bottom-center" class="offscreen"><div class="panel" id="lgnd"><div id="lgnd-body"></div></div></div>
 <div id="coord-ov" class="offscreen">Lat/Lng: <span id="coord-val">-</span></div>
 <div id="attrib-ov" class="offscreen">© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors · © <a href="https://carto.com/attributions" target="_blank">CARTO</a></div>
-<img src="wtalogo.png" id="logo-bl" class="offscreen" alt="" onerror="this.style.display='none'">
+<div id="map-logo">
+    <a href="https://www.wtalabs.ph" target="_blank" rel="noopener noreferrer">
+        <img src="wtalogo.png" id="logo-bl" class="offscreen" alt="WTA Logo" onerror="this.style.display='none'" style="cursor: pointer;">
+    </a>
+</div>
 <div id="tip"><div class="tip-box"><div class="tip-name" id="tip-name"></div><div class="tip-sub" id="tip-sub"></div></div></div>
 
 <script>
@@ -403,6 +804,9 @@ function enterMap() {
     const ctrl = document.querySelector('.maplibregl-ctrl-bottom-right');
     if (ctrl) ctrl.classList.remove('offscreen');
   }, 480);
+  const _gh=document.getElementById('home-logo-top');
+  if(_gh){_gh.style.transition='opacity 0.4s';_gh.style.opacity='0';}
+  setTimeout(()=>{const _go=document.getElementById('geocite-overlay');if(_go){_go.classList.remove('offscreen');_go.classList.add('visible');}},600);
   map.flyTo({ center: [121.034, 14.588], zoom: 13.5, duration: 2000, essential: true });
   map.once('moveend', () => {
     entering = false;
@@ -415,6 +819,8 @@ function enterMap() {
 function showHome() {
   if (homeVisible || entering) return;
   homeVisible = true;
+  const _go=document.getElementById('geocite-overlay');if(_go){_go.classList.remove('visible');_go.classList.add('offscreen');}
+  const _gh=document.getElementById('home-logo-top');if(_gh)setTimeout(()=>{_gh.style.opacity='1';},400);
   // Slide all map UI panels offscreen
   ['top-nav','left-col','right-col','bottom-center','coord-ov','logo-bl'].forEach(id => {
     const el = document.getElementById(id); if (el) el.classList.add('offscreen');
@@ -549,7 +955,7 @@ function interpC(props) {
 
 const HLYR = [
   { key:'density', label:'Movement Density', field:'HexMovementDensitymean', srcId:'src-hex-density', layerId:'lyr-hex-density',
-    colors:['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'],
+    colors:['#990000','#d7301f','#ef6548','#fc8d59','#fdbb84','#fdd49e','#fee8c8','#fff7ec'],
     desc:'Mean ecological movement density per hex cell from Omniscape circuit-theory modeling.',
     showF:['Mun_City','Barangay','TreeBarangay_pc','HexMovementDensitymean'],
     ren:{'HexMovementDensitymean':'Avg Cell Movement Density','TreeBarangay_pc':'Tree Area Percentage (%)','Mun_City':'City','Barangay':'Barangay'},
@@ -626,12 +1032,16 @@ function toWGS(gj) {
   (g.features||[]).forEach(f => { if(f?.geometry) f.geometry.coordinates = cv(f.geometry.coordinates, f.geometry.type); });
   return g;
 }
-async function loadGJ(file) {
-  try {
-    const r = await fetch(file); if (!r.ok) throw new Error('HTTP ' + r.status);
-    const raw = await r.json(); const crs = sniff(raw);
-    return { data: crs==='UTM' ? toWGS(raw) : raw, ok:true, crs };
-  } catch(e) { console.warn('[load]', file, e.message); return { data:{type:'FeatureCollection',features:[]}, ok:false, crs:'err' }; }
+async function loadGJ(file, onProgress) {
+  return fetchWithProgress(file, onProgress)
+    .then(raw => {
+      const crs = sniff(raw);
+      return { data: crs==='UTM' ? toWGS(raw) : raw, ok:true, crs };
+    })
+    .catch(e => {
+      console.warn('[load]', file, e.message);
+      return { data:{type:'FeatureCollection',features:[]}, ok:false, crs:'err' };
+    });
 }
 function calcSt(feats, prop) {
   const vals = feats.map(f=>{const v=f.properties?.[prop];return typeof v==='number'?v:parseFloat(v);}).filter(v=>isFinite(v)&&!isNaN(v));
@@ -704,10 +1114,94 @@ map.on('zoomend', () => {
 });
 
 // MAIN LOAD
+
+// ── Loading screen progress controller ──────────────────────────
+let _loaderPct = 0;
+
+// ── Smooth continuous fill animation ──────────────────────
+// Actual download progress drives a target.
+// A constant RAF loop eases the visual fill toward the target
+// with a gentle velocity model — no jumps, no cuts, flat surface.
+let _fillTarget = 0;
+let _fillCurrent = 0;
+let _fillVelocity = 0;
+let _fillRafId = null;
+
+function setLoaderProgress(ratio) {
+  _fillTarget = Math.min(1, Math.max(0, ratio));
+  _loaderPct  = _fillTarget;
+  if (!_fillRafId) _fillRafId = requestAnimationFrame(_tickFill);
+}
+
+function _tickFill() {
+  // Spring-based easing: accelerates toward target, decelerates on approach
+  const stiffness = 0.04;  // how fast it chases target
+  const damping   = 0.72;  // smoothness (lower = more glide)
+  const dist = _fillTarget - _fillCurrent;
+  _fillVelocity = _fillVelocity * damping + dist * stiffness;
+  _fillCurrent  = Math.min(_fillTarget, _fillCurrent + _fillVelocity);
+
+  const bar = document.getElementById('ldr-fill-bar');
+  if (bar) bar.style.height = (_fillCurrent * 100).toFixed(3) + '%';
+
+  if (Math.abs(_fillTarget - _fillCurrent) > 0.0003) {
+    _fillRafId = requestAnimationFrame(_tickFill);
+  } else {
+    _fillCurrent = _fillTarget;
+    if (bar) bar.style.height = (_fillCurrent * 100).toFixed(3) + '%';
+    _fillRafId = null;
+  }
+}
+
+// Fetch with byte-level progress tracking
+async function fetchWithProgress(url, onProgress) {
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const total = parseInt(resp.headers.get('content-length') || '0', 10);
+    const reader = resp.body.getReader();
+    const chunks = [];
+    let loaded = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      loaded += value.length;
+      if (total > 0 && onProgress) onProgress(loaded / total);
+    }
+    const blob = new Blob(chunks);
+    const text = await blob.text();
+    return JSON.parse(text);
+  } catch (e) {
+    // Fallback: plain fetch without progress
+    const resp = await fetch(url);
+    if (!resp.ok) return { type: 'FeatureCollection', features: [] };
+    return await resp.json();
+  }
+}
+// ─────────────────────────────────────────────────────────────────
+
 map.on('load', async () => {
   setMsg('Fetching GeoJSON...');
-  const _bar=document.getElementById('loader-bar'),_tot=MFST.length;let _done=0;
-  const results = await Promise.all(MFST.map(([f]) => loadGJ(f).then(r=>{_done++;if(_bar)_bar.style.width=Math.round(_done/_tot*100)+'%';return r;})));
+  // Real byte-level progress tracking across all GeoJSON files
+  const _tot = MFST.length;
+  // Per-file progress buckets (0.0–1.0 each)
+  const _fileProgress = new Array(_tot).fill(0);
+  const _fileWeight = 1 / _tot; // each file = equal weight
+  // GeoJSON fetches = 85% of total progress; MapLibre render = last 15%
+  const FETCH_SHARE = 0.85;
+
+  function updateProgress() {
+    const fetchAvg = _fileProgress.reduce((s, v) => s + v, 0) / _tot;
+    setLoaderProgress(fetchAvg * FETCH_SHARE);
+  }
+
+  const results = await Promise.all(MFST.map(([f], idx) =>
+    loadGJ(f, p => {
+      _fileProgress[idx] = p;
+      updateProgress();
+    })
+  ));
   MFST.forEach(([,srcId],i) => {
     GD[srcId] = results[i].data; FS[srcId] = {};
     const feats = results[i].data.features||[];
@@ -827,6 +1321,20 @@ function clearBrgyHover() {
 
 // INTERACTIONS
   att('lyr-brgy-fill','src-brgy', f => { const p=f.properties||{}; const city=matchCity(p.Mun_City||p.City||''); return {badge:'Barangay',name:nm(p,'Barangay'),tipSub:'Click to view statistics',rfn:locked=>rBrgy(p,locked,city)}; });
+  // Zoom to clicked barangay in barangay scale
+  map.on('click','lyr-brgy-fill', e => {
+    if (S.scale !== 'barangay-scale') return;
+    if (!e.features?.length) return;
+    const clicked = e.features[0];
+    const feats = GD['src-brgy']?.features||[];
+    const feat = feats.find(f=>f.id===clicked.id)
+               || feats.find(f=>nm(f.properties,'')===nm(clicked.properties,''));
+    if (!feat?.geometry) return;
+    try {
+      const bbox = turf.bbox(feat);
+      map.fitBounds([[bbox[0],bbox[1]],[bbox[2],bbox[3]]],{padding:80,maxZoom:17,duration:600,essential:true});
+    } catch(err) { console.warn('[brgy-zoom]',err); }
+  });
   att('lyr-core-fill','src-core', f => {
   const p=f.properties||{};
   const rank=p.Rank||p.ID||'-';
@@ -913,8 +1421,26 @@ function clearBrgyHover() {
   });
 
   buildHexBtns(); buildBrgyDD(); applyScale('barangay-scale');
-  document.getElementById('loader').classList.add('out');
-  setTimeout(() => document.getElementById('loader').style.display='none', 500);
+  // Layers built — push to 95% while waiting for MapLibre 'idle'
+  setLoaderProgress(0.95);
+  map.once('idle', () => {
+    setLoaderProgress(1.0);
+    setTimeout(() => {
+      const l = document.getElementById('loader');
+      if (l) {
+        l.classList.add('out');
+        setTimeout(() => { l.style.display = 'none'; }, 800);
+      }
+    }, 350);
+  });
+  // Safety fallback: hide loader after 5s regardless
+  setTimeout(() => {
+    const l = document.getElementById('loader');
+    if (l && l.style.display !== 'none') {
+      setLoaderProgress(1.0);
+      setTimeout(() => { l.classList.add('out'); setTimeout(()=>l.style.display='none',800); }, 300);
+    }
+  }, 5000);
   // Keep scale bar hidden until enterMap
   const _scCtrl=document.querySelector('.maplibregl-ctrl-bottom-right');
   if(_scCtrl && homeVisible) _scCtrl.classList.add('offscreen');
@@ -1310,8 +1836,211 @@ function updLgnd() {
     }
   }
 }
-function setMsg(t){ /* logo-only loader */ }
+function setMsg(t){ /* loader is progress-fill only */ }
 
 </script>
+
+<!-- Guide Panel Backdrop -->
+<div id="guide-backdrop" onclick="closeGuide()"></div>
+
+<!-- Guide Panel -->
+<div id="guide-panel" role="dialog" aria-label="Map Guide">
+  <div id="guide-panel-header">
+    <h2>How to Use This Map</h2>
+    <button id="guide-close" onclick="closeGuide()" aria-label="Close guide">×</button>
+  </div>
+  <div id="guide-scroll">
+
+  <!-- Section 1: What is this map? -->
+  <div class="g-section">
+    <button class="g-section-hdr" onclick="toggleSection(this)">
+      <span>What is this map?</span>
+      <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="g-section-body" style="display:none">
+      <p class="g-text">Urban birds — pigeons, sparrows, swallows, mynas, and their kin — are far more than background noise in a busy city. As <em>synanthropic</em> species, they have evolved to thrive alongside human settlements, navigating a landscape of rooftops, roads, parks, and tree canopies that we have shaped over centuries.</p>
+      <p class="g-text">This Ecological Network Map visualises the invisible pathways these birds use every day: the green corridors where they feed, nest, shelter, and move between patches of urban nature. Using a method called <strong>Omniscape circuit-theory modelling</strong> — which treats the city like an electrical circuit and calculates how easily "ecological current" flows from one green patch to another — the map translates complex animal movement data into something any resident can see and understand.</p>
+    </div>
+  </div>
+
+  <!-- Section 2: Why does it matter? -->
+  <div class="g-section">
+    <button class="g-section-hdr" onclick="toggleSection(this)">
+      <span>Why does it matter?</span>
+      <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="g-section-body" style="display:none">
+      <p class="g-text">Every time a patch of trees is cleared, a park is paved over, or a road widens into a green strip, a piece of that invisible corridor breaks. Disconnected green patches mean birds become isolated, locally extinct, and the natural pest control, seed dispersal, and stress-relief that urban birds quietly provide us disappears with them.</p>
+      <p class="g-text">This map shows planners, communities, and local governments exactly <em>where</em> the critical links in San Juan and Mandaluyong's green network are — the pinch points that need protection, the dead zones that need restoration, and the corridors that deserve preservation.</p>
+    </div>
+  </div>
+
+  <!-- Section 3: What can you do? -->
+  <div class="g-section">
+    <button class="g-section-hdr" onclick="toggleSection(this)">
+      <span>What can you do with this?</span>
+      <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="g-section-body" style="display:none">
+      <p class="g-text">Protecting urban biodiversity is not just about birds — it is about building cities that are cooler, greener, more resilient, and genuinely liveable for people too. Use this map to identify which streets in your neighbourhood are ecological corridors, which parks anchor the network, and where restoration efforts would deliver the greatest connectivity benefit.</p>
+    </div>
+  </div>
+
+  <!-- Section 4: Step-by-step guide -->
+  <div class="g-section g-section-steps">
+    <button class="g-section-hdr open" onclick="toggleSection(this)">
+      <span>Step-by-Step Guide</span>
+      <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="g-section-body">
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">1</span>
+          <span class="g-step-label">Start at the Home Screen</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">When you first open the map, you will see the title screen. Click <strong>Enter Map</strong> to fly into San Juan and Mandaluyong. The map will animate into the study area automatically.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">2</span>
+          <span class="g-step-label">Choose a Scale</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">At the top of the screen, find three scale buttons: <strong>Barangay Scale</strong>, <strong>Hex Grid Scale</strong>, and <strong>Road Scale</strong>. Each reveals a different layer of ecological data. Start with Barangay Scale for a neighbourhood-level overview.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">3</span>
+          <span class="g-step-label">Explore the Barangay Scale</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">Click any barangay to open its statistics in the Properties panel — average movement density, tree cover, core habitat patches, and area. Use the dropdown at the top to jump to a specific barangay.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">4</span>
+          <span class="g-step-label">Switch to the Hex Grid Scale</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">This view breaks the city into hexagonal cells. Switch between <strong>Movement Density</strong>, <strong>Tree Cover Area</strong>, <strong>Policy Zone</strong>, and <strong>Cluster Types</strong> using the layer buttons. Hover to preview, click to lock statistics.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">5</span>
+          <span class="g-step-label">Read the Legend</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">The legend at the bottom centre explains the current colour scale. Darker colours indicate higher ecological activity. For cluster types, colours represent statistical significance — hot spots are priority areas, cold spots are ecological dead zones.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">6</span>
+          <span class="g-step-label">Toggle Overlays</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">Use the toggle switches in the top bar: <strong>Core Habitats</strong> shows anchor patches in the network. <strong>Barangay Borders</strong> overlays neighbourhood boundaries with name labels.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">7</span>
+          <span class="g-step-label">Explore the Road Scale</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text"><strong>Relevant Roads</strong> (shown in green) pass through active ecological corridors — priority candidates for street tree planting or canopy restoration. Click any road to see its movement density and tree cover data.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">8</span>
+          <span class="g-step-label">Click Core Habitat Patches</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">With Core Habitats on, click any numbered green dot to see that patch's importance rank, its <em>dI'</em> connectivity score, area, and corresponding landmark (e.g. Wack-Wack Golf Course).</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">9</span>
+          <span class="g-step-label">Zoom and Pan Freely</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">Scroll to zoom, click-drag to pan. Zooming far out returns you to the home screen — click <strong>Enter Map</strong> again to re-enter the study area.</p>
+        </div>
+      </div>
+      <div class="g-step">
+        <button class="g-step-hdr" onclick="toggleStep(this)">
+          <span class="g-step-num">10</span>
+          <span class="g-step-label">About City Panel</span>
+          <svg class="g-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="g-step-body" style="display:none">
+          <p class="g-text">In Barangay Scale, selecting a barangay shows an <strong>About the City</strong> card on the left — population, land area, and key facts to contextualise the ecological data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+  <div id="guide-footer">
+    <button id="guide-start-btn" onclick="closeGuide();enterMap()">
+      Get Started
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+</div>
+
+
+<script>
+function toggleStep(btn) {
+  var body = btn.nextElementSibling;
+  var isOpen = btn.classList.contains('open');
+  if (isOpen) { btn.classList.remove('open'); body.style.display = 'none'; }
+  else         { btn.classList.add('open');    body.style.display = '';    }
+}
+function toggleSection(btn) {
+  var body = btn.nextElementSibling;
+  var isOpen = btn.classList.contains('open');
+  if (isOpen) {
+    btn.classList.remove('open');
+    body.style.display = 'none';
+  } else {
+    btn.classList.add('open');
+    body.style.display = '';
+  }
+}
+function openGuide() {
+  var p = document.getElementById('guide-panel');
+  var b = document.getElementById('guide-backdrop');
+  if (!p) { alert('guide-panel not found'); return; }
+  p.getBoundingClientRect();
+  p.classList.add('open');
+  b.classList.add('open');
+}
+function closeGuide() {
+  var p = document.getElementById('guide-panel');
+  var b = document.getElementById('guide-backdrop');
+  if (p) p.classList.remove('open');
+  if (b) b.classList.remove('open');
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeGuide(); });
+</script>
+
+<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="geocite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
 </body>
 </html>
