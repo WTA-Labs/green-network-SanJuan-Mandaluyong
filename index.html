@@ -11,7 +11,7 @@
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-#home{position:absolute;inset:0;z-index:200;display:flex;transition:opacity .7s;height:100dvh}
+#home{position:absolute;inset:0;z-index:200;display:flex;transition:opacity .7s}
 #home.fade-out{opacity:0;pointer-events:none}
 #home-left{width:100%;height:100%;position:absolute;left:0;top:0;z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding:40px 60px;background:linear-gradient(to right,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 20%,rgba(255,255,255,0) 60%);pointer-events:none}
 #home-left::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,0.05) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
@@ -54,7 +54,7 @@
   --hover:rgba(26,158,110,0.06);--r:10px;
   --shadow:0 4px 22px rgba(0,0,0,0.20),0 1px 6px rgba(0,0,0,0.12);}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;background:#e8ecf0;color:var(--tx1);height:100vh;height:100dvh;overflow:hidden}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;background:#e8ecf0;color:var(--tx1);height:100vh;overflow:hidden}
 #map{position:absolute;inset:0;z-index:1}
 
 /* HOME */
@@ -113,7 +113,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 
 
 /* LEFT */
-#left-col{position:absolute;top:77px;left:14px;width:252px;z-index:10;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:hidden;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
+#left-col{position:absolute;top:77px;left:14px;width:252px;z-index:10;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:visible;padding-bottom:4px}
 #left-col::-webkit-scrollbar{width:3px}#left-col::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:2px}
 .map-eyebrow{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
 .map-title{font-family:'Space Mono',monospace;font-size:1.02rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--tx1);line-height:1.2;margin-bottom:4px}
@@ -133,8 +133,8 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 .ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 
 /* RIGHT */
-#right-col{position:absolute;top:77px;right:14px;width:268px;z-index:10;display:flex;flex-direction:column;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
-#rp{display:flex;flex-direction:column;overflow:hidden;flex:0 1 auto;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);background:var(--panel);min-height:0}
+#right-col{position:absolute;top:77px;right:14px;width:268px;z-index:10;display:flex;flex-direction:column;max-height:calc(100vh - 120px)}
+#rp{display:flex;flex-direction:column;overflow:hidden;flex:1;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);background:var(--panel)}
 #rp-top{padding:10px 13px 7px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel-d)}
 .rp-ey{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:2px}
 .rp-mt{font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;text-transform:uppercase;color:var(--tx1)}
@@ -146,7 +146,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 #rp-name{font-size:.85rem;font-weight:700;color:var(--tx1);line-height:1.3;word-break:break-word}
 #rp-hint{padding:18px 13px;text-align:center;font-size:.75rem;color:var(--tx2);line-height:1.7;flex-shrink:0}
 #rp-hint strong{color:var(--tx1)}
-#rp-body{display:none;overflow-y:auto;flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
+#rp-body{display:none;overflow-y:auto;flex:1}
 #rp-body::-webkit-scrollbar{width:3px}#rp-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.09);border-radius:2px}
 .sec-hdr{padding:5px 13px 4px;font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);background:var(--panel-d);border-bottom:1px solid var(--border);border-top:1px solid var(--border)}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:9px 11px;border-bottom:1px solid var(--border)}
@@ -448,9 +448,9 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 #geocite-overlay.visible{opacity:1;pointer-events:all}
 #geocite-overlay img{height:40px;width:auto;object-fit:contain;display:block}
 
-.map-guide-link{display:block;width:100%;padding:10px 13px 12px;font-size:.75rem;color:var(--acc);position:relative;z-index:50;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;text-decoration:none;letter-spacing:.01em;transition:color .18s;background:#fff;border:none;border-top:1px solid rgba(0,0,0,0.07);text-align:left}
-.map-guide-link:hover{color:#0d7a53;text-decoration:underline}
-#lp{display:flex;flex-direction:column;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
+.map-guide-link{display:block;width:100%;padding:10px 13px 12px;font-size:.75rem;color:rgba(0,0,0,0.55);position:relative;z-index:50;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;text-decoration:none;letter-spacing:.01em;transition:color .18s;background:#fff;border:none;border-top:1px solid rgba(0,0,0,0.08);text-align:left;sticky-bottom:0}
+.map-guide-link:hover{color:var(--acc)}
+#lp{display:flex;flex-direction:column;min-height:0}
 #attrib-ov{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.48rem;color:rgba(0,0,0,0.5);z-index:2000;pointer-events:none;line-height:1.4;text-align:center;white-space:nowrap}
 #attrib-ov a{color:rgba(0,0,0,0.6);text-decoration:none;pointer-events:all}
 
@@ -460,488 +460,74 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 
 #home-left .h-mid,#home-left .h-study,#home-left #home-logo-top{pointer-events:all}
 
-/* ═══ LOADING SCREEN ═══════════════════════════════════ */
-#loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity 0.8s ease}
-#loader.out{opacity:0;pointer-events:none}
-#ldr-bg{position:absolute;inset:0;background:#FFFFFF;z-index:0}
-#ldr-logo-wrap{position:relative;width:420px;height:420px;z-index:1}
-#ldr-gray{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1;filter:grayscale(1) brightness(0.75) opacity(0.35)}
-#ldr-fill-mask{position:absolute;inset:0;z-index:2;overflow:hidden;-webkit-mask-image:url('loadingframe2.svg');-webkit-mask-repeat:no-repeat;-webkit-mask-position:center;-webkit-mask-size:contain;mask-image:url('loadingframe2.svg');mask-repeat:no-repeat;mask-position:center;mask-size:contain}
-#ldr-fill-bar{position:absolute;bottom:0;left:0;right:0;height:0%;background:linear-gradient(to right,#004EC4 0%,#008F4C 100%);transition:none}
-#ldr-frame1{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:3;pointer-events:none}
+
+
+
+
+
+
+
+
+
 /* ═══════════════════════════════════════════════════════ */
 
-/* Thin scrollbars for all panels */
-#left-col::-webkit-scrollbar,
-#right-col::-webkit-scrollbar,
-#lp::-webkit-scrollbar,
-#rp-body::-webkit-scrollbar { width: 3px }
-#left-col::-webkit-scrollbar-track,
-#right-col::-webkit-scrollbar-track,
-#lp::-webkit-scrollbar-track,
-#rp-body::-webkit-scrollbar-track { background: transparent }
-#left-col::-webkit-scrollbar-thumb,
-#right-col::-webkit-scrollbar-thumb,
-#lp::-webkit-scrollbar-thumb,
-#rp-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px }
+/* ══════════════════════════════════════════════════════════
+   LOADING SCREEN — deterministic, CSS-eased progress fill
+══════════════════════════════════════════════════════════ */
+#loader {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.7s ease 0.2s;
+}
+#loader.out { opacity: 0; pointer-events: none; }
 
-@media (max-height: 600px) {
-  #left-col, #right-col { max-height: calc(100vh - 80px) }
+/* White background */
+#ldr-bg { position: absolute; inset: 0; background: #fff; z-index: 0; }
+
+/* Fixed-size logo container */
+#ldr-logo-wrap {
+  position: relative; width: 420px; height: 420px; z-index: 1;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   MOBILE RESPONSIVE — max-width: 768px
-   Rules: only layout, CSS, UI transitions. Zero map/data logic touched.
-═══════════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-
-  /* ── 1. VIEWPORT FIXING ── */
-  html, body { height: 100dvh; overflow: hidden; }
-  #home { height: 100svh; height: 100dvh; }
-
-  /* ── 2. HOME SCREEN: vertical stack ── */
-  #home {
-    flex-direction: column;
-    position: relative;
-  }
-  #home-right {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    flex: none;
-    width: 100%;
-    height: 100%;
-  }
-  #home-left {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: 100svh;
-    height: 100dvh;
-    padding: 32px 28px 28px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    /* Vertical gradient: opaque at top, fades to transparent at bottom */
-    background: linear-gradient(
-      to bottom,
-      rgba(255,255,255,1)   0%,
-      rgba(255,255,255,1)  35%,
-      rgba(255,255,255,0.92) 55%,
-      rgba(255,255,255,0)  100%
-    );
-    pointer-events: none;
-  }
-  #home-left::before {
-    background-size: 20px 20px;
-  }
-  #home-right-fade {
-    background: linear-gradient(
-      to bottom,
-      rgba(240,246,244,0.15) 0%,
-      transparent 50%
-    );
-  }
-  /* Unblock pointer events on interactive children */
-  #home-left .h-mid,
-  #home-left .h-study,
-  #home-left #home-logo-top,
-  #home-left #guide-link,
-  #enter-btn { pointer-events: all; }
-
-  #home-logo-top { height: 44px; margin-bottom: 8px; }
-
-  .h-title { font-size: 2.4rem; }
-  .h-location { font-size: .95rem; margin-bottom: 20px; }
-
-  /* Enter button — thumb-friendly */
-  #enter-btn {
-    padding: 16px 36px;
-    font-size: 1rem;
-    min-height: 52px;
-    min-width: 52px;
-    border-radius: 50px;
-    margin-bottom: 10px;
-  }
-  /* "Need a guide?" link — 44px min touch target */
-  #home-left #guide-link {
-    font-size: .88rem;
-    min-height: 44px;
-    line-height: 44px;
-    display: inline-block;
-    padding: 0 4px;
-  }
-
-  /* Bottom brand row — padded, centered */
-  .h-study {
-    align-self: flex-start;
-    font-size: .82rem;
-    padding-bottom: env(safe-area-inset-bottom, 8px);
-    padding-bottom: max(env(safe-area-inset-bottom, 8px), 8px);
-  }
-
-  /* ── 3. TOP NAV: compact wrapping bar ── */
-  #top-nav {
-    top: 8px;
-    left: 8px;
-    right: 8px;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: flex-start;
-  }
-  #toggle-group {
-    padding: 6px 10px;
-    gap: 8px;
-    flex-wrap: wrap;
-    border-radius: 8px !important;
-  }
-  .tgl-row { gap: 7px; }
-  .tgl-label {
-    font-size: .72rem;
-    min-height: 44px;
-    line-height: 44px;
-  }
-  .sw { width: 38px; height: 22px; }
-  .sl::before { width: 16px; height: 16px; left: 3px; top: 3px; }
-  .sw input:checked + .sl::before { transform: translateX(16px); }
-
-  /* Scale bar full-width */
-  #scale-bar {
-    width: 100%;
-    justify-content: space-between;
-    padding: 4px 6px;
-    border-radius: 8px;
-    order: 1; /* put scale bar below toggles */
-  }
-  .sbtn {
-    flex: 1;
-    text-align: center;
-    padding: 10px 4px;
-    min-height: 44px;
-    font-size: .72rem;
-    border-radius: 6px;
-  }
-  /* Barangay dropdown bar */
-  #brgy-bar {
-    width: 100%;
-    order: 2;
-    padding: 6px 12px;
-    border-radius: 8px;
-    min-height: 44px;
-  }
-  .brgy-sel {
-    min-width: 0;
-    flex: 1;
-    font-size: .85rem;
-    min-height: 44px;
-  }
-  .brgy-lbl { font-size: .6rem; }
-
-  /* Move MapLibre zoom controls to bottom-right safe zone */
-  .maplibregl-ctrl-top-right { top: auto !important; bottom: 140px !important; right: 10px !important; }
-  .maplibregl-ctrl-group button {
-    width: 44px !important;
-    height: 44px !important;
-  }
-
-  /* ── 4. LEFT PANEL → BOTTOM SHEET ── */
-  #left-col {
-    /* Reset desktop positioning */
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    bottom: 0;
-    z-index: 300;
-    max-height: 85dvh;
-    max-height: 85svh;
-    overflow-y: visible; /* sheet handles its own scroll */
-    padding-bottom: 0;
-    /* Sheet appearance */
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -6px 32px rgba(0,0,0,0.18);
-    /* Bottom-sheet translate — "collapsed" = only handle visible */
-    transform: translateY(calc(100% - 52px));
-    transition: transform 0.42s cubic-bezier(0.22,1,0.36,1);
-    gap: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  /* When slid up */
-  #left-col.sheet-open {
-    transform: translateY(0);
-  }
-  /* Override desktop slide-in transitions: on mobile sheets use translateY */
-  #left-col, #right-col {
-    transition: transform 0.42s cubic-bezier(0.22,1,0.36,1) !important;
-    opacity: 1 !important;
-  }
-  /* Override desktop offscreen states */
-  #left-col.offscreen {
-    transform: translateY(110%) !important;
-    opacity: 1 !important; /* keep visible but off-screen via translate */
-  }
-
-  /* Drag handle bar at the top of the sheet */
-  #left-col::before {
-    content: '';
-    display: block;
-    width: 48px;
-    height: 5px;
-    background: rgba(0,0,0,0.18);
-    border-radius: 3px;
-    margin: 10px auto 6px;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-
-  /* Sheet toggle button — sits inside the handle zone */
-  #sheet-toggle-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    min-height: 44px;
-    background: none;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: .8rem;
-    font-weight: 600;
-    color: var(--tx2);
-    letter-spacing: .04em;
-    padding: 0 16px 4px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  #sheet-toggle-btn svg {
-    width: 16px; height: 16px; flex-shrink: 0;
-    transition: transform 0.3s ease;
-  }
-  #left-col.sheet-open #sheet-toggle-btn svg {
-    transform: rotate(180deg);
-  }
-
-  /* Scrollable content area inside the sheet */
-  #left-sheet-scroll {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    flex: 1;
-    overscroll-behavior: contain;
-  }
-  /* Desktop: #lp and adjacent panels are direct children */
-  #left-col #lp,
-  #left-col .panel {
-    border-radius: 0 !important;
-    border-left: none !important;
-    border-right: none !important;
-    box-shadow: none !important;
-    border-top: none !important;
-  }
-  #left-col .panel:last-child { border-bottom: none !important; }
-
-  /* Layer buttons — fill width on mobile */
-  .hlyr-btn {
-    padding: 11px 10px;
-    min-height: 44px;
-    font-size: .82rem;
-  }
-  .ldot { width: 12px; height: 12px; }
-
-  /* ── 5. RIGHT PANEL → BOTTOM SHEET (right side = secondary sheet) ── */
-  #right-col {
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    bottom: 0;
-    z-index: 299; /* below left sheet */
-    max-height: 55dvh;
-    overflow-y: visible;
-    padding-bottom: 0;
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.14);
-    transform: translateY(calc(100% - 48px));
-    transition: transform 0.42s cubic-bezier(0.22,1,0.36,1);
-    display: flex;
-    flex-direction: column;
-  }
-  #right-col.sheet-open {
-    transform: translateY(0);
-  }
-  #right-col.offscreen {
-    transform: translateY(110%) !important;
-    opacity: 1 !important;
-  }
-  #right-col::before {
-    content: '';
-    display: block;
-    width: 40px; height: 4px;
-    background: rgba(0,0,0,0.15);
-    border-radius: 3px;
-    margin: 8px auto 4px;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  #rp-sheet-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    width: 100%;
-    min-height: 40px;
-    background: var(--panel-d);
-    border: none;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: .78rem;
-    font-weight: 600;
-    color: var(--tx2);
-    padding: 0 16px 4px;
-    flex-shrink: 0;
-  }
-  #rp-sheet-toggle svg {
-    width: 15px; height: 15px;
-    transition: transform 0.3s ease;
-  }
-  #right-col.sheet-open #rp-sheet-toggle svg {
-    transform: rotate(180deg);
-  }
-  #right-sheet-scroll {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    flex: 1;
-    overscroll-behavior: contain;
-    max-height: calc(55dvh - 60px);
-  }
-  #rp { border-radius: 0 !important; box-shadow: none !important; border: none !important; }
-
-  /* When left sheet is open, push right sheet down */
-  #left-col.sheet-open ~ #right-col { z-index: 295; }
-
-  /* ── 6. BOTTOM LEGEND — moved up to clear sheets ── */
-  #bottom-center {
-    bottom: 56px; /* above both sheets' collapsed handle */
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: calc(100vw - 20px);
-    z-index: 11;
-  }
-  #bottom-center.offscreen { transform: translateX(-50%) translateY(130%); }
-  #lgnd-body { flex-wrap: wrap; }
-  .lgnd-sec {
-    padding: 6px 8px;
-    flex-shrink: 0;
-  }
-  .lgnd-lbl { font-size: .52rem; }
-  .lgnd-row { font-size: .68rem; }
-  .lgnd-tgl { font-size: .68rem; min-height: 44px; padding: 0 2px; }
-  .lgnd-tgl input[type=checkbox] { width: 18px; height: 18px; }
-
-  /* ── 7. COORDINATE OVERLAY ── */
-  #coord-ov {
-    bottom: 58px;
-    right: 8px;
-    font-size: .52rem;
-    padding: 2px 7px;
-  }
-
-  /* ── 8. BOTTOM-LEFT LOGO — clear of sheets ── */
-  #logo-bl {
-    bottom: 58px;
-    left: 8px;
-    height: 24px;
-  }
-
-  /* ── 9. GEOCITE overlay — top-left, clear of nav ── */
-  #geocite-overlay { top: 8px; left: 8px; }
-  #geocite-overlay img { height: 30px; }
-
-  /* ── 10. TOUCH TARGETS — 44px minimums ── */
-  .tgl-row label.sw { min-height: 44px; display: flex; align-items: center; }
-  .map-guide-link { min-height: 48px; font-size: .82rem; padding: 12px 16px; }
-  .coll-btn { min-height: 44px; }
-  .prop-row { padding: 7px 13px; }
-  .pk, .pv { font-size: .76rem; }
-  .stat-val { font-size: 1rem !important; }
-  .stat-key { font-size: .64rem; }
-
-  /* ── 11. REMOVE HOVER STATES on mobile (replace with :active) ── */
-  .sbtn:hover { background: transparent; color: var(--tx2); border-color: transparent; }
-  .sbtn:active { background: var(--acc); color: #fff; border-color: var(--acc); }
-  .hlyr-btn:hover { border-color: var(--border); background: #fff; color: var(--tx2); }
-  .hlyr-btn:active { border-color: var(--acc); background: var(--acc-l); color: var(--tx1); }
-  #enter-btn:hover { transform: none; background: var(--acc); box-shadow: 0 4px 24px rgba(26,158,110,0.38); }
-  #enter-btn:active { background: #0d7a53; transform: scale(0.97); }
-  .map-guide-link:hover { color: var(--acc); text-decoration: none; }
-  .map-guide-link:active { color: #0d7a53; }
-  .g-section-hdr:hover { color: #000; }
-  .g-section-hdr:active { color: var(--acc); }
-  .g-step-hdr:hover .g-step-label { color: #000; }
-  .g-step-hdr:active .g-step-label { color: var(--acc); }
-  .lgnd-tgl:hover { background: none; }
-  .lgnd-tgl:active { background: var(--hover); }
-  #sheet-toggle-btn:hover { background: none; }
-  #sheet-toggle-btn:active { background: var(--hover); }
-
-  /* ── 12. GUIDE PANEL — full viewport width ── */
-  #guide-panel {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100svh;
-    height: 100dvh;
-    border-radius: 0;
-  }
-  #guide-close {
-    font-size: 1.8rem;
-    min-width: 48px;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-  }
-  #guide-panel-header { padding: 16px 18px 12px; }
-  #guide-panel-header h2 { font-size: .95rem; }
-  #guide-scroll { padding: 16px 16px 0; }
-  #guide-footer { padding: 14px 18px 18px; }
-  #guide-start-btn {
-    min-height: 52px;
-    font-size: .9rem;
-  }
-  .g-section-hdr { padding: 16px 0; min-height: 52px; }
-  .g-step-hdr { min-height: 44px; }
-  .g-step-num { width: 28px; height: 28px; font-size: .7rem; }
-  .g-step-label { font-size: .85rem; }
-
-  /* ── 13. ATTRIB overlay ── */
-  #attrib-ov { bottom: 60px; font-size: .44rem; }
-
-  /* ── 14. Tip (hover tooltip) — hidden on touch ── */
-  #tip { display: none !important; }
-
-  /* ── 15. SCALE CONTROL push up ── */
-  .maplibregl-ctrl-bottom-right { bottom: 64px !important; right: 8px !important; }
+/* Gray base: always-visible silhouette */
+#ldr-gray {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; z-index: 1;
+  filter: grayscale(1) brightness(0.68) opacity(0.30);
 }
 
-/* Extra-small phones */
-@media (max-width: 380px) {
-  .h-title { font-size: 2rem; }
-  #scale-bar { gap: 3px; }
-  .sbtn { font-size: .64rem; padding: 9px 2px; }
-  #toggle-group { gap: 6px; }
+/* Masked fill container — gradient only shows inside logo shape */
+#ldr-fill-mask {
+  position: absolute; inset: 0; z-index: 2; overflow: hidden;
+  -webkit-mask-image: url('loadingframe2.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url('loadingframe2.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
+
+/* The fill bar — rises from bottom.
+   CSS handles ALL easing; JS only sets the target height.
+   cubic-bezier(0.4, 0, 0.2, 1) = Material Design "standard" easing
+   — fast out, gentle deceleration. Duration scales with distance. */
+#ldr-fill-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 0%;
+  background: linear-gradient(to right, #004EC4 0%, #008F4C 100%);
+  /* Initial transition for first surge */
+  transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: height;
+}
+
+/* Outline frame on top — gives the crisp logo edge */
+#ldr-frame1 {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; z-index: 3; pointer-events: none;
+}
+/* ═════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -1001,50 +587,34 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 </div>
 
 <div id="left-col" class="offscreen">
-  <!-- Mobile-only: drag handle + toggle label -->
-  <button id="sheet-toggle-btn" onclick="toggleLeftSheet()" aria-label="Toggle panel">
-    <span id="sheet-toggle-label">Layers &amp; Info</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-  </button>
-  <!-- Scrollable sheet content -->
-  <div id="left-sheet-scroll">
-    <div class="panel" id="lp">
-      <div class="psec">
-        <div class="map-eyebrow">Metro Manila Green Infrastructure</div>
-        <div class="map-title">Ecological Green Network</div>
-        <div class="map-subtitle">San Juan and Mandaluyong City</div>
-        <div class="map-desc">Structural and functional ecological connectivity using GuidosToolbox (MSPA), CONEFOR (network importance), and Omniscape (circuit-theory modeling). Identifies core habitats, corridors, and critical bottlenecks within the urban landscape.<br><br><a href="https://www.wtalabs.ph/greenframework" target="_blank">Read more about the research framework here</a></div>
-        <div class="city-card" id="city-card">
-          <div class="city-title" id="city-title-el"></div>
-          <img id="city-img" class="city-img" src="" alt="">
-          <div id="city-rows"></div>
-          <div class="city-note" id="city-note"></div>
-        </div>
+  <div class="panel" id="lp">
+    <div class="psec">
+      <div class="map-eyebrow">Metro Manila Green Infrastructure</div>
+      <div class="map-title">Ecological Green Network</div>
+      <div class="map-subtitle">San Juan and Mandaluyong City</div>
+      <div class="map-desc">Structural and functional ecological connectivity using GuidosToolbox (MSPA), CONEFOR (network importance), and Omniscape (circuit-theory modeling). Identifies core habitats, corridors, and critical bottlenecks within the urban landscape.<br><br><a href="https://www.wtalabs.ph/greenframework" target="_blank">Read more about the research framework here</a></div>
+      <div class="city-card" id="city-card">
+        <div class="city-title" id="city-title-el"></div>
+        <img id="city-img" class="city-img" src="" alt="">
+        <div id="city-rows"></div>
+        <div class="city-note" id="city-note"></div>
       </div>
-      <button class="map-guide-link" onclick="openGuide()">Need a guide?</button>
     </div>
-    <div class="panel"><div class="psec"><div class="sd-title" id="sd-title">-</div><div class="sd-body" id="sd-body"></div></div></div>
-    <div class="panel" id="hex-sub" style="display:none">
-      <div class="psec"><div class="plabel">Hex Layer</div><div id="hex-btns"></div></div>
-    </div>
+    <button class="map-guide-link" onclick="openGuide()">Need a guide?</button>
+  </div>
+  <div class="panel"><div class="psec"><div class="sd-title" id="sd-title">-</div><div class="sd-body" id="sd-body"></div></div></div>
+  <div class="panel" id="hex-sub" style="display:none">
+    <div class="psec"><div class="plabel">Hex Layer</div><div id="hex-btns"></div></div>
   </div>
 </div>
 
 <div id="right-col" class="offscreen">
-  <!-- Mobile-only: drag handle + toggle label -->
-  <button id="rp-sheet-toggle" onclick="toggleRightSheet()" aria-label="Toggle properties panel">
-    <span id="rp-sheet-label">Properties</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-  </button>
-  <!-- Scrollable sheet content -->
-  <div id="right-sheet-scroll">
-    <div id="rp">
-      <div id="rp-top"><div class="rp-mt">Properties</div></div>
-      <div id="rp-ldesc"><div class="rp-ll" id="rp-ll">Layer</div><div class="rp-lb" id="rp-lb"></div></div>
-      <div id="rp-hdr"><div class="rp-badge" id="rp-badge">-</div><div id="rp-name">Hover or click a feature</div></div>
-      <div id="rp-hint">Hover over any feature.<br><strong>Click</strong> to lock and view full statistics.</div>
-      <div id="rp-body"></div>
-    </div>
+  <div id="rp">
+    <div id="rp-top"><div class="rp-mt">Properties</div></div>
+    <div id="rp-ldesc"><div class="rp-ll" id="rp-ll">Layer</div><div class="rp-lb" id="rp-lb"></div></div>
+    <div id="rp-hdr"><div class="rp-badge" id="rp-badge">-</div><div id="rp-name">Hover or click a feature</div></div>
+    <div id="rp-hint">Hover over any feature.<br><strong>Click</strong> to lock and view full statistics.</div>
+    <div id="rp-body"></div>
   </div>
 </div>
 
@@ -1416,48 +986,58 @@ map.on('zoomend', () => {
 });
 
 // MAIN LOAD
-// ═══ Loader fill animation (time-based, smooth) ═══════════
-let _loaderFill     = 0;
-let _fetchRatio     = 0;
-let _loaderFinished = false;
-let _loaderLastTime = null;
-let _loaderPct      = 0;
+// ═══ Loader — determinate CSS-eased progress fill ════════════
+//
+// How it works:
+//   1. Each GeoJSON fetch completion calls setLoaderProgress(n/total)
+//   2. setLoaderProgress() sets #ldr-fill-bar height via CSS
+//   3. CSS transition (cubic-bezier) handles ALL easing — no RAF needed
+//   4. Duration is computed proportional to the step size so small
+//      steps still look smooth and large steps don't drag
+//   5. map.once('idle') triggers _loaderFinish() for the final push
+//
+let _ldrCurrentPct  = 0;   // last height we set (0–100)
+let _ldrFinished    = false;
+let _loaderPct      = 0;   // exposed for any other code that reads it
 
-const _BASE_SPEED = 0.000036;
-const _MAX_SPEED  = 0.00028;
-const _AMB_CAP    = 0.72;
-
-function _loaderTick(ts) {
-  if (_loaderFinished) return;
-  if (_loaderLastTime === null) _loaderLastTime = ts;
-  const dt = Math.min(ts - _loaderLastTime, 50);
-  _loaderLastTime = ts;
-  const speed = _BASE_SPEED + (_fetchRatio * (_MAX_SPEED - _BASE_SPEED));
-  const cap = _fetchRatio < 1.0 ? Math.max(_AMB_CAP, _fetchRatio * 0.90) : 1.0;
-  _loaderFill = Math.min(cap, _loaderFill + speed * dt * (_fetchRatio >= 1.0 ? 2.5 : 1.0));
+function _ldrSetHeight(pct, durationMs) {
   const bar = document.getElementById('ldr-fill-bar');
-  if (bar) bar.style.height = (_loaderFill * 100).toFixed(2) + '%';
-  if (_loaderFill >= 0.9999) {
-    _loaderFinished = true;
-    if (bar) bar.style.height = '100%';
-    setTimeout(() => {
-      const l = document.getElementById('loader');
-      if (l) { l.classList.add('out'); setTimeout(() => l.style.display='none', 800); }
-    }, 400);
-  } else {
-    requestAnimationFrame(_loaderTick);
-  }
+  if (!bar) return;
+  // Update CSS transition duration for this specific step
+  bar.style.transition = `height ${durationMs}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+  bar.style.height = pct.toFixed(2) + '%';
+  _ldrCurrentPct = pct;
 }
-requestAnimationFrame(_loaderTick);
 
 function setLoaderProgress(ratio) {
-  _fetchRatio = Math.min(1, Math.max(0, ratio));
-  _loaderPct  = _fetchRatio;
+  if (_ldrFinished) return;
+  const targetPct = Math.min(95, ratio * 92);  // cap at 95% — final 5% for map render
+  if (targetPct <= _ldrCurrentPct) return;
+  const delta = targetPct - _ldrCurrentPct;
+  // Duration: ~18ms per 1% of fill, min 400ms, max 1600ms
+  const dur = Math.max(400, Math.min(1600, delta * 18));
+  _loaderPct = ratio;
+  _ldrSetHeight(targetPct, dur);
 }
+
 function _loaderFinish() {
-  _fetchRatio = 1.0;
+  if (_ldrFinished) return;
+  _ldrFinished = true;
+  // Final push to 100% with a smooth 900ms ease
+  _ldrSetHeight(100, 900);
+  // Fade out after fill completes
+  setTimeout(() => {
+    const l = document.getElementById('loader');
+    if (l) { l.classList.add('out'); setTimeout(() => l.style.display = 'none', 900); }
+  }, 1000);
 }
-// ═══════════════════════════════════════════════════════════
+
+// Initial "breathing" surge on page load — shows immediately
+// so the bar is already visibly started before data arrives
+setTimeout(() => _ldrSetHeight(8, 1400), 0);
+setTimeout(() => _ldrSetHeight(14, 1000), 1600);
+// ═══════════════════════════════════════════════════════════════
+
 
 map.on('load', async () => {
   setMsg('Fetching GeoJSON...');
@@ -1684,9 +1264,9 @@ function clearBrgyHover() {
   });
 
   buildHexBtns(); buildBrgyDD(); applyScale('barangay-scale');
-  setLoaderProgress(0.95);
+  setLoaderProgress(1.0);   // all GeoJSON done
   map.once('idle', () => _loaderFinish());
-  setTimeout(() => { if (!_loaderFinished) _loaderFinish(); }, 5000);
+  setTimeout(() => { if (!_ldrFinished) _loaderFinish(); }, 5000);
   // Keep scale bar hidden until enterMap
   const _scCtrl=document.querySelector('.maplibregl-ctrl-bottom-right');
   if(_scCtrl && homeVisible) _scCtrl.classList.add('offscreen');
@@ -2287,110 +1867,6 @@ function closeGuide() {
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeGuide(); });
 </script>
 
-<script>
-/* ═══════════════════════════════════════════════════════════════════
-   MOBILE BOTTOM SHEET LOGIC
-   Operates only when window.innerWidth <= 768px.
-   No map data/layer logic is touched.
-═══════════════════════════════════════════════════════════════════ */
-
-var _isMobile = function() { return window.innerWidth <= 768; };
-
-/* ── Left sheet toggle ── */
-function toggleLeftSheet() {
-  if (!_isMobile()) return;
-  var col = document.getElementById('left-col');
-  if (!col) return;
-  col.classList.toggle('sheet-open');
-  // When left sheet opens, close right sheet
-  if (col.classList.contains('sheet-open')) {
-    var rc = document.getElementById('right-col');
-    if (rc) rc.classList.remove('sheet-open');
-  }
-}
-
-/* ── Right sheet toggle ── */
-function toggleRightSheet() {
-  if (!_isMobile()) return;
-  var rc = document.getElementById('right-col');
-  if (!rc) return;
-  rc.classList.toggle('sheet-open');
-  // When right sheet opens, close left sheet
-  if (rc.classList.contains('sheet-open')) {
-    var lc = document.getElementById('left-col');
-    if (lc) lc.classList.remove('sheet-open');
-  }
-}
-
-/* ── Auto-open the right Properties sheet when a feature is clicked ── */
-var _origFillPanel = typeof fillPanel === 'function' ? fillPanel : null;
-if (_origFillPanel) {
-  fillPanel = function(info, locked) {
-    _origFillPanel(info, locked);
-    if (locked && _isMobile()) {
-      var rc = document.getElementById('right-col');
-      var lc = document.getElementById('left-col');
-      if (rc && !rc.classList.contains('sheet-open')) {
-        rc.classList.add('sheet-open');
-        if (lc) lc.classList.remove('sheet-open');
-      }
-    }
-  };
-}
-
-/* ── Touch swipe gesture for both sheets ── */
-(function() {
-  var sheets = [
-    { id: 'left-col',  toggleFn: toggleLeftSheet },
-    { id: 'right-col', toggleFn: toggleRightSheet }
-  ];
-  sheets.forEach(function(s) {
-    var el = document.getElementById(s.id);
-    if (!el) return;
-    var startY = null, startTime = null;
-    el.addEventListener('touchstart', function(e) {
-      startY = e.touches[0].clientY;
-      startTime = Date.now();
-    }, { passive: true });
-    el.addEventListener('touchend', function(e) {
-      if (startY === null || !_isMobile()) return;
-      var dy = e.changedTouches[0].clientY - startY;
-      var dt = Date.now() - startTime;
-      // Fast swipe up (dy < -40px in < 400ms) → open
-      // Fast swipe down (dy > 40px in < 400ms) → close
-      if (dt < 400) {
-        if (dy < -40 && !el.classList.contains('sheet-open')) s.toggleFn();
-        else if (dy > 40 && el.classList.contains('sheet-open')) s.toggleFn();
-      }
-      startY = null;
-    }, { passive: true });
-  });
-})();
-
-/* ── Close sheets when map canvas is tapped (outside sheets) ── */
-(function() {
-  var mapEl = document.getElementById('map');
-  if (!mapEl) return;
-  mapEl.addEventListener('touchend', function() {
-    if (!_isMobile()) return;
-    var lc = document.getElementById('left-col');
-    var rc = document.getElementById('right-col');
-    if (lc) lc.classList.remove('sheet-open');
-    if (rc) rc.classList.remove('sheet-open');
-  }, { passive: true });
-})();
-
-/* ── Re-init display on window resize: reset sheet classes on desktop ── */
-window.addEventListener('resize', function() {
-  if (!_isMobile()) {
-    var lc = document.getElementById('left-col');
-    var rc = document.getElementById('right-col');
-    if (lc) lc.classList.remove('sheet-open');
-    if (rc) rc.classList.remove('sheet-open');
-  }
-});
-</script>
-
-<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="geocite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
+<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="GeoCite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
 </body>
 </html>
