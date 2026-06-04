@@ -464,10 +464,10 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 #loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity 0.8s ease}
 #loader.out{opacity:0;pointer-events:none}
 #ldr-bg{position:absolute;inset:0;background:#FFFFFF;z-index:0}
-#ldr-logo-wrap{position:relative;width:420px;height:420px;z-index:1}
+#ldr-logo-wrap{position:relative;width:420px;height:420px;z-index:1;overflow:hidden}
 #ldr-gray{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1;filter:grayscale(1) brightness(0.75) opacity(0.35)}
 #ldr-fill-mask{position:absolute;inset:0;z-index:2;overflow:hidden;-webkit-mask-image:url('loadingframe2.svg');-webkit-mask-repeat:no-repeat;-webkit-mask-position:center;-webkit-mask-size:contain;mask-image:url('loadingframe2.svg');mask-repeat:no-repeat;mask-position:center;mask-size:contain}
-#ldr-fill-bar{position:absolute;bottom:0;left:0;right:0;height:0%;background:linear-gradient(to right,#004EC4 0%,#008F4C 100%);transition:none}
+#ldr-fill-bar{position:absolute;bottom:0;left:0;right:0;height:100%;background:linear-gradient(to right,#004EC4 0%,#008F4C 100%);transform:scaleY(0);transform-origin:bottom center;transition:none}
 #ldr-frame1{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:3;pointer-events:none}
 /* ═══════════════════════════════════════════════════════ */
 
@@ -489,6 +489,23 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
   #left-col, #right-col { max-height: calc(100vh - 80px) }
 }
 
+
+/* Bird info spacing — visual separation from Properties header */
+#rp-hdr.bird-mode {
+  padding-top: 14px;
+  border-top: 3px solid rgba(26,158,110,0.15);
+  margin-top: 4px;
+}
+
+/* Cover any SVG bottom artifact with a white strip */
+#ldr-logo-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 18px;
+  background: #fff;
+  z-index: 4;
+}
 </style>
 </head>
 <body>
@@ -805,7 +822,7 @@ const HLYR = [
     procDesc:'Values derived using Omniscape (Julia), applying circuit theory across a resistance surface from land cover data. Pairwise electrical current between core patches is accumulated. Higher values indicate stronger ecological corridor function.'
   },
   { key:'tree', label:'Tree Cover Area', field:'TreeBarangay_area', srcId:'src-hex-tree', layerId:'lyr-hex-tree',
-    colors:['#f7fcf5','#c7e9c0','#74c476','#238b45','#005a32'],
+    colors:['#c7e9c0','#74c476','#31a354','#006d2c','#00441b'],
     desc:'Tree canopy area per hex cell. Classified using log-quantile breaks for skewed distribution (many low values).',
     showF:['Mun_City','Barangay','TreeBarangay_pc','HexMovementDensitymean'],
     ren:{'TreeBarangay_area':'Cell Tree Cover Area (sqm)','HexMovementDensitymean':'Avg Cell Movement Density','TreeBarangay_pc':'Tree Area Percentage (%)','Mun_City':'City','Barangay':'Barangay'},
@@ -974,7 +991,7 @@ function _loaderTick(ts) {
   if (bar) bar.style.height = (_loaderFill * 100).toFixed(2) + '%';
   if (_loaderFill >= 0.9999) {
     _loaderFinished = true;
-    if (bar) bar.style.height = '100%';
+    if (bar) bar.style.transform = 'scaleY(1)';
     setTimeout(() => {
       const l = document.getElementById('loader');
       if (l) { l.classList.add('out'); setTimeout(() => l.style.display='none', 800); }
@@ -1184,12 +1201,27 @@ function _loadBirdsLayer() {
       let _selBirdId = null;
       map.on('click', 'lyr-birds-hit', (e) => {
         if (!e.features.length) return;
-        _birdClickConsumed = true; // prevent other layer click handlers from firing
-        // Clear previous selected
+        _birdClickConsumed = true;
+        const _clickedBirdId = e.features[0].id;
+        // Toggle: click same bird → deselect + clear panel
+        if (_selBirdId === _clickedBirdId) {
+          map.setFeatureState({source:'src-birds',id:_selBirdId},{selected:false});
+          _selBirdId = null;
+          S.locked = false; S.sel = {src:null,id:null};
+          clearPanel();
+          return;
+        }
+        // Clear previous bird
         if (_selBirdId !== null)
-          map.setFeatureState({ source: 'src-birds', id: _selBirdId }, { selected: false });
-        _selBirdId = e.features[0].id;
-        map.setFeatureState({ source: 'src-birds', id: _selBirdId }, { selected: true });
+          map.setFeatureState({source:'src-birds',id:_selBirdId},{selected:false});
+        // Clear any active rp feature so panel resets cleanly
+        if (S.sel.id != null) {
+          try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(_){}
+        }
+        S.locked = false; S.sel = {src:null,id:null};
+        _selBirdId = _clickedBirdId;
+        map.setFeatureState({source:'src-birds',id:_selBirdId},{selected:true});
+        map.flyTo({center:e.lngLat,zoom:Math.max(map.getZoom(),16),duration:600,essential:true});
         // Query all bird features within a small pixel radius
         const pt = e.point;
         const bbox = [[pt.x-8, pt.y-8],[pt.x+8, pt.y+8]];
@@ -1243,8 +1275,13 @@ function _showBirdPanel(props, count) {
   const rp = document.getElementById('rp');
   if (rp) rp.classList.remove('offscreen');
 
+  // Hide layer description when showing bird info
+  var ldesc = document.getElementById('rp-ldesc');
+  if (ldesc) ldesc.style.display = 'none';
+
   const badge = document.getElementById('rp-badge');
   if (badge) { badge.textContent = '🐦 Bird Sighting'; badge.style.display = 'inline-block'; }
+  var rphdr = document.getElementById('rp-hdr'); if (rphdr) rphdr.classList.add('bird-mode');
 
   const nameEl = document.getElementById('rp-name');
   if (nameEl) { nameEl.textContent = common; nameEl.style.display = 'block'; }
@@ -1269,6 +1306,9 @@ function _showBirdPanel(props, count) {
 function _showMultiBirdPanel(propsList) {
   const rp = document.getElementById('rp');
   if (rp) rp.classList.remove('offscreen');
+
+  var ldescM = document.getElementById('rp-ldesc');
+  if (ldescM) ldescM.style.display = 'none';
 
   // Deduplicate by scientific name first so counts are accurate
   const bySpecies = {};
@@ -1321,9 +1361,10 @@ function _showMultiBirdPanel(propsList) {
 
 
 function _bringTopLayers() {
-  ['lyr-core-fill','lyr-core-line','lyr-core-label-circle','lyr-core-labels',
-   'lyr-birds','lyr-birds-hit'].forEach(function(id) {
-    if (map.getLayer(id)) map.moveLayer(id);
+  ['lyr-brgy-out','lyr-brgy-lbl',
+   'lyr-core-fill','lyr-core-line','lyr-core-label-circle','lyr-core-labels',
+   'lyr-birds','lyr-birds-hit'].forEach(function(id){
+    try{if(map.getLayer(id))map.moveLayer(id);}catch(e){}
   });
 }
 
@@ -1377,6 +1418,22 @@ map.on('load', async () => {
     }
     map.addLayer({id:cfg.layerId,type:'fill',source:cfg.srcId,layout:{visibility:'none'},paint:{'fill-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',cp],'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.88,['boolean',['feature-state','selected'],false],0.88,0.55],'fill-outline-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',cp]}});
   });
+  // Tree cover: cells < 30% of max → transparent; rest = light→dark green ramp
+  (function(){
+    var cfg=HLYR.find(function(c){return c.key==='tree';});
+    if(!cfg)return;
+    var feats=(GD[cfg.srcId]||{}).features||[];
+    if(!feats.length)return;
+    var vals=feats.map(function(f){return+(f.properties[cfg.field]||0);}).filter(function(v){return v>0;});
+    if(!vals.length)return;
+    var mx=Math.max.apply(null,vals), thresh=mx*0.30, step=(mx-thresh)/4;
+    var colors=['#c7e9c0','#74c476','#31a354','#006d2c','#00441b'];
+    var cExprT=['step',['to-number',['get',cfg.field],0],'rgba(0,0,0,0)'];
+    for(var i=0;i<colors.length;i++)cExprT.push(thresh+i*step,colors[i]);
+    map.setPaintProperty('lyr-hex-tree','fill-color',cExprT);
+    map.setPaintProperty('lyr-hex-tree','fill-opacity',['case',['boolean',['feature-state','hover'],false],0.88,['boolean',['feature-state','selected'],false],0.88,['<',['to-number',['get',cfg.field],0],thresh],0,0.55]);
+    map.setPaintProperty('lyr-hex-tree','fill-outline-color',cExprT);
+  })();
   CLYR.forEach(cfg => { map.addLayer({id:cfg.layerId,type:'fill',source:cfg.srcId,layout:{visibility:'none'},paint:{'fill-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',buildClrColor()],'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.88,['boolean',['feature-state','selected'],false],0.88,0.55],'fill-outline-color':['case',['boolean',['feature-state','hover'],false],'#39ff14',['boolean',['feature-state','selected'],false],'#39ff14',buildClrColor()]}}); });
 
   // ROADS — single fully opaque line, wide hit layer
@@ -1473,7 +1530,11 @@ function clearBrgyHover() {
   const feat=CORE_FEATURES[+rank]||'';
   const tipName=feat?`Core #${rank} — ${feat}`:`Core Area #${rank}`;
   return {badge:'Core Habitat',name:tipName,tipSub:`Rank #${rank} | dI': ${fmt(p["dI'"]??p.dI)}`,rfn:locked=>rCore(p,locked)};
-});
+}, true);
+  map.on('click','lyr-core-fill',function(e){
+    if(!e.features||!e.features.length)return;
+    try{var c=turf.centroid({type:'Feature',geometry:e.features[0].geometry}).geometry.coordinates;map.flyTo({center:c,zoom:16,duration:700,essential:true});}catch(_){}
+  });
   HLYR.forEach(cfg => {
   att(cfg.layerId,cfg.srcId, f => {
     const p=f.properties||{};
@@ -1570,8 +1631,8 @@ function buildBrgyDD() {
   const bySJ=[], byMan=[];
   feats.forEach(f => { const p=f.properties||{}; const name=nm(p,'?'); const city=matchCity(p.Mun_City||p.City||''); if(city==='San Juan')bySJ.push(name); else byMan.push(name); });
   bySJ.sort(); byMan.sort();
-  const g1=document.createElement('optgroup'); g1.label='San Juan City'; bySJ.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;g1.appendChild(o);});
-  const g2=document.createElement('optgroup'); g2.label='Mandaluyong City'; byMan.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;g2.appendChild(o);});
+  const g1=document.createElement('optgroup'); g1.label='San Juan City'; bySJ.forEach(n=>{const o=document.createElement('option');o.value='SJ|'+n;o.textContent=n;g1.appendChild(o);});
+  const g2=document.createElement('optgroup'); g2.label='Mandaluyong City'; byMan.forEach(n=>{const o=document.createElement('option');o.value='MAN|'+n;o.textContent=n;g2.appendChild(o);});
   sel.appendChild(g1); sel.appendChild(g2);
 }
 
@@ -1580,7 +1641,10 @@ function onBrgySelect(sel) {
   if (!sel.value) return;
   const feats = GD['src-brgy']?.features||[];
   let feat = null, featIdx = -1;
-  feats.forEach((f,i) => { if(nm(f.properties,'')===sel.value){feat=f;featIdx=i;} });
+  const _vp=sel.value.split('|');
+  const _tName=_vp.length>1?_vp[1]:sel.value;
+  const _tCity=_vp[0]==='SJ'?'San Juan':_vp[0]==='MAN'?'Mandaluyong':null;
+  feats.forEach((f,i)=>{const p=f.properties||{};if(nm(p,'')===_tName&&(!_tCity||matchCity(p.Mun_City||p.City||'')===_tCity)){feat=f;featIdx=i;}});
   if (!feat||!feat.geometry) return;
   const fid = feat.id != null ? feat.id : featIdx;
   const p = feat.properties||{};
@@ -1774,6 +1838,7 @@ function fillPanel(info, locked) {
   body.innerHTML='<div class="sec-hdr">Statistics</div>'+info.rfn(locked);
 }
 function clearPanel() {
+  var rphdrC=document.getElementById('rp-hdr'); if(rphdrC) rphdrC.classList.remove('bird-mode');
   document.getElementById('rp-badge').textContent='-';
   document.getElementById('rp-name').textContent='Hover or click a feature';
   document.getElementById('rp-hint').style.display='block';
@@ -1826,12 +1891,20 @@ function clrH() {
   S.hov={src:null,id:null};
 }
 let _birdClickConsumed = false;
+let _priorityClicked = false;
 
-function att(layerId, srcId, infoFn) {
+function att(layerId, srcId, infoFn, isPriority) {
   map.on('mouseenter',layerId,()=>{map.getCanvas().style.cursor='pointer';});
   map.on('mouseleave',layerId,()=>{map.getCanvas().style.cursor='';clrH();if(!S.locked){hideTip();clearPanel();}});
   map.on('mousemove',layerId,e=>{if(!e.features?.length)return;const f=e.features[0];setH(srcId,f.id);const info=infoFn(f);showTip(e.point,info.name,info.tipSub);if(!S.locked)fillPanel(info,false);});
-  map.on('click',layerId,e=>{if(_birdClickConsumed){_birdClickConsumed=false;return;}if(!e.features?.length)return;const f=e.features[0];if(S.locked&&S.sel.id===f.id&&S.sel.src===srcId){try{map.setFeatureState({source:srcId,id:f.id},{selected:false});}catch(e){}S.locked=false;S.sel={src:null,id:null};clearPanel();}else{if(S.sel.id!=null)try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(e){}S.locked=true;S.sel={src:srcId,id:f.id};try{map.setFeatureState({source:srcId,id:f.id},{selected:true});}catch(e){}fillPanel(infoFn(f),true);}e.preventDefault();});
+  map.on('click',layerId,e=>{
+    if(_birdClickConsumed){_birdClickConsumed=false;return;}
+    if(!isPriority&&_priorityClicked) return;
+    if(!e.features?.length)return;
+    const f=e.features[0];
+    if(isPriority){_priorityClicked=true;setTimeout(()=>{_priorityClicked=false;},0);}
+    if(S.locked&&S.sel.id===f.id&&S.sel.src===srcId){try{map.setFeatureState({source:srcId,id:f.id},{selected:false});}catch(e){}S.locked=false;S.sel={src:null,id:null};clearPanel();}else{if(S.sel.id!=null)try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(e){}S.locked=true;S.sel={src:srcId,id:f.id};try{map.setFeatureState({source:srcId,id:f.id},{selected:true});}catch(e){}fillPanel(infoFn(f),true);}e.preventDefault();
+  });
 }
 
 // TOGGLES
@@ -1877,7 +1950,7 @@ function applyScale(scale) {
   if (scale==='barangay-scale') { ['lyr-brgy-fill','lyr-brgy-line'].forEach(sh); document.getElementById('hex-sub').style.display='none'; hideLDesc(); hideCityLeft(); }
   else if (scale==='hex-scale') { document.getElementById('hex-sub').style.display='block'; applyHex(S.hexKey); }
   else if (scale==='road-scale') { ['lyr-road','lyr-road-rel','lyr-rlbl-pri','lyr-rlbl-loc'].forEach(sh); if(map.getLayer('lyr-road-hit'))sh('lyr-road-hit'); document.getElementById('hex-sub').style.display='none'; hideLDesc(); hideCityLeft(); }
-  ['lyr-brgy-out','lyr-brgy-lbl','lyr-core-fill','lyr-core-line'].forEach(l=>{try{map.moveLayer(l);}catch(e){}});
+  _bringTopLayers();
   const sd=SCALE_DESC[scale]; document.getElementById('sd-title').textContent=sd.title; document.getElementById('sd-body').textContent=sd.body;
   updLgnd();
 }
@@ -2159,6 +2232,6 @@ function closeGuide() {
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeGuide(); });
 </script>
 
-<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="geocite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
+<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="GeoPowered.svg" alt="Geocite" onerror="this.style.display='none'"></a>
 </body>
 </html>
