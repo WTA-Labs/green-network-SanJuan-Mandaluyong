@@ -113,7 +113,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 
 
 /* LEFT */
-#left-col{position:absolute;top:77px;left:14px;width:252px;z-index:10;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:visible;padding-bottom:4px}
+#left-col{position:absolute;top:77px;left:14px;width:252px;z-index:10;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:hidden;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
 #left-col::-webkit-scrollbar{width:3px}#left-col::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:2px}
 .map-eyebrow{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
 .map-title{font-family:'Space Mono',monospace;font-size:1.02rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--tx1);line-height:1.2;margin-bottom:4px}
@@ -133,8 +133,8 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 .ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 
 /* RIGHT */
-#right-col{position:absolute;top:77px;right:14px;width:268px;z-index:10;display:flex;flex-direction:column;max-height:calc(100vh - 120px)}
-#rp{display:flex;flex-direction:column;overflow:hidden;flex:1;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);background:var(--panel)}
+#right-col{position:absolute;top:77px;right:14px;width:268px;z-index:10;display:flex;flex-direction:column;max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
+#rp{display:flex;flex-direction:column;overflow:hidden;flex:0 1 auto;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);background:var(--panel);min-height:0}
 #rp-top{padding:10px 13px 7px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel-d)}
 .rp-ey{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:2px}
 .rp-mt{font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;text-transform:uppercase;color:var(--tx1)}
@@ -146,7 +146,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smooth
 #rp-name{font-size:.85rem;font-weight:700;color:var(--tx1);line-height:1.3;word-break:break-word}
 #rp-hint{padding:18px 13px;text-align:center;font-size:.75rem;color:var(--tx2);line-height:1.7;flex-shrink:0}
 #rp-hint strong{color:var(--tx1)}
-#rp-body{display:none;overflow-y:auto;flex:1}
+#rp-body{display:none;overflow-y:auto;flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
 #rp-body::-webkit-scrollbar{width:3px}#rp-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.09);border-radius:2px}
 .sec-hdr{padding:5px 13px 4px;font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);background:var(--panel-d);border-bottom:1px solid var(--border);border-top:1px solid var(--border)}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:9px 11px;border-bottom:1px solid var(--border)}
@@ -448,9 +448,9 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 #geocite-overlay.visible{opacity:1;pointer-events:all}
 #geocite-overlay img{height:40px;width:auto;object-fit:contain;display:block}
 
-.map-guide-link{display:block;width:100%;padding:10px 13px 12px;font-size:.75rem;color:rgba(0,0,0,0.55);position:relative;z-index:50;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;text-decoration:none;letter-spacing:.01em;transition:color .18s;background:#fff;border:none;border-top:1px solid rgba(0,0,0,0.08);text-align:left;sticky-bottom:0}
-.map-guide-link:hover{color:var(--acc)}
-#lp{display:flex;flex-direction:column;min-height:0}
+.map-guide-link{display:block;width:100%;padding:10px 13px 12px;font-size:.75rem;color:var(--acc);position:relative;z-index:50;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;text-decoration:none;letter-spacing:.01em;transition:color .18s;background:#fff;border:none;border-top:1px solid rgba(0,0,0,0.07);text-align:left}
+.map-guide-link:hover{color:#0d7a53;text-decoration:underline}
+#lp{display:flex;flex-direction:column;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.15) transparent}
 #attrib-ov{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.48rem;color:rgba(0,0,0,0.5);z-index:2000;pointer-events:none;line-height:1.4;text-align:center;white-space:nowrap}
 #attrib-ov a{color:rgba(0,0,0,0.6);text-decoration:none;pointer-events:all}
 
@@ -460,74 +460,35 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
 
 #home-left .h-mid,#home-left .h-study,#home-left #home-logo-top{pointer-events:all}
 
-
-
-
-
-
-
-
-
-
+/* ═══ LOADING SCREEN ═══════════════════════════════════ */
+#loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity 0.8s ease}
+#loader.out{opacity:0;pointer-events:none}
+#ldr-bg{position:absolute;inset:0;background:#FFFFFF;z-index:0}
+#ldr-logo-wrap{position:relative;width:420px;height:420px;z-index:1}
+#ldr-gray{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1;filter:grayscale(1) brightness(0.75) opacity(0.35)}
+#ldr-fill-mask{position:absolute;inset:0;z-index:2;overflow:hidden;-webkit-mask-image:url('loadingframe2.svg');-webkit-mask-repeat:no-repeat;-webkit-mask-position:center;-webkit-mask-size:contain;mask-image:url('loadingframe2.svg');mask-repeat:no-repeat;mask-position:center;mask-size:contain}
+#ldr-fill-bar{position:absolute;bottom:0;left:0;right:0;height:0%;background:linear-gradient(to right,#004EC4 0%,#008F4C 100%);transition:none}
+#ldr-frame1{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:3;pointer-events:none}
 /* ═══════════════════════════════════════════════════════ */
 
-/* ══════════════════════════════════════════════════════════
-   LOADING SCREEN — deterministic, CSS-eased progress fill
-══════════════════════════════════════════════════════════ */
-#loader {
-  position: fixed; inset: 0; z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
-  transition: opacity 0.7s ease 0.2s;
-}
-#loader.out { opacity: 0; pointer-events: none; }
+/* Thin scrollbars for all panels */
+#left-col::-webkit-scrollbar,
+#right-col::-webkit-scrollbar,
+#lp::-webkit-scrollbar,
+#rp-body::-webkit-scrollbar { width: 3px }
+#left-col::-webkit-scrollbar-track,
+#right-col::-webkit-scrollbar-track,
+#lp::-webkit-scrollbar-track,
+#rp-body::-webkit-scrollbar-track { background: transparent }
+#left-col::-webkit-scrollbar-thumb,
+#right-col::-webkit-scrollbar-thumb,
+#lp::-webkit-scrollbar-thumb,
+#rp-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px }
 
-/* White background */
-#ldr-bg { position: absolute; inset: 0; background: #fff; z-index: 0; }
-
-/* Fixed-size logo container */
-#ldr-logo-wrap {
-  position: relative; width: 420px; height: 420px; z-index: 1;
-}
-
-/* Gray base: always-visible silhouette */
-#ldr-gray {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: contain; z-index: 1;
-  filter: grayscale(1) brightness(0.68) opacity(0.30);
+@media (max-height: 600px) {
+  #left-col, #right-col { max-height: calc(100vh - 80px) }
 }
 
-/* Masked fill container — gradient only shows inside logo shape */
-#ldr-fill-mask {
-  position: absolute; inset: 0; z-index: 2; overflow: hidden;
-  -webkit-mask-image: url('loadingframe2.svg');
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-  mask-image: url('loadingframe2.svg');
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-}
-
-/* The fill bar — rises from bottom.
-   CSS handles ALL easing; JS only sets the target height.
-   cubic-bezier(0.4, 0, 0.2, 1) = Material Design "standard" easing
-   — fast out, gentle deceleration. Duration scales with distance. */
-#ldr-fill-bar {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 0%;
-  background: linear-gradient(to right, #004EC4 0%, #008F4C 100%);
-  /* Initial transition for first surge */
-  transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: height;
-}
-
-/* Outline frame on top — gives the crisp logo edge */
-#ldr-frame1 {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: contain; z-index: 3; pointer-events: none;
-}
-/* ═════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -571,6 +532,10 @@ body,#top-nav *,.tgl-label,.sbtn,.brgy-lbl,.brgy-sel,.hlyr-btn,#hex-sub *{font-f
     <div class="tgl-row">
       <label class="sw"><input type="checkbox" id="tgl-brgy" onchange="toggleBrgyBorder(this.checked)"><span class="sl"></span></label>
       <span class="tgl-label">Barangay Borders</span>
+    </div>
+    <div class="tgl-row">
+      <label class="sw"><input type="checkbox" id="tgl-birds" onchange="toggleBirds(this.checked)"><span class="sl"></span></label>
+      <span class="tgl-label">Bird Sightings</span>
     </div>
   </div>
   <div id="scale-bar">
@@ -986,58 +951,381 @@ map.on('zoomend', () => {
 });
 
 // MAIN LOAD
-// ═══ Loader — determinate CSS-eased progress fill ════════════
-//
-// How it works:
-//   1. Each GeoJSON fetch completion calls setLoaderProgress(n/total)
-//   2. setLoaderProgress() sets #ldr-fill-bar height via CSS
-//   3. CSS transition (cubic-bezier) handles ALL easing — no RAF needed
-//   4. Duration is computed proportional to the step size so small
-//      steps still look smooth and large steps don't drag
-//   5. map.once('idle') triggers _loaderFinish() for the final push
-//
-let _ldrCurrentPct  = 0;   // last height we set (0–100)
-let _ldrFinished    = false;
-let _loaderPct      = 0;   // exposed for any other code that reads it
+// ═══ Loader fill animation (time-based, smooth) ═══════════
+let _loaderFill     = 0;
+let _fetchRatio     = 0;
+let _loaderFinished = false;
+let _loaderLastTime = null;
+let _loaderPct      = 0;
 
-function _ldrSetHeight(pct, durationMs) {
+const _BASE_SPEED = 0.000036;
+const _MAX_SPEED  = 0.00028;
+const _AMB_CAP    = 0.72;
+
+function _loaderTick(ts) {
+  if (_loaderFinished) return;
+  if (_loaderLastTime === null) _loaderLastTime = ts;
+  const dt = Math.min(ts - _loaderLastTime, 50);
+  _loaderLastTime = ts;
+  const speed = _BASE_SPEED + (_fetchRatio * (_MAX_SPEED - _BASE_SPEED));
+  const cap = _fetchRatio < 1.0 ? Math.max(_AMB_CAP, _fetchRatio * 0.90) : 1.0;
+  _loaderFill = Math.min(cap, _loaderFill + speed * dt * (_fetchRatio >= 1.0 ? 2.5 : 1.0));
   const bar = document.getElementById('ldr-fill-bar');
-  if (!bar) return;
-  // Update CSS transition duration for this specific step
-  bar.style.transition = `height ${durationMs}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-  bar.style.height = pct.toFixed(2) + '%';
-  _ldrCurrentPct = pct;
+  if (bar) bar.style.height = (_loaderFill * 100).toFixed(2) + '%';
+  if (_loaderFill >= 0.9999) {
+    _loaderFinished = true;
+    if (bar) bar.style.height = '100%';
+    setTimeout(() => {
+      const l = document.getElementById('loader');
+      if (l) { l.classList.add('out'); setTimeout(() => l.style.display='none', 800); }
+    }, 400);
+  } else {
+    requestAnimationFrame(_loaderTick);
+  }
 }
+requestAnimationFrame(_loaderTick);
 
 function setLoaderProgress(ratio) {
-  if (_ldrFinished) return;
-  const targetPct = Math.min(95, ratio * 92);  // cap at 95% — final 5% for map render
-  if (targetPct <= _ldrCurrentPct) return;
-  const delta = targetPct - _ldrCurrentPct;
-  // Duration: ~18ms per 1% of fill, min 400ms, max 1600ms
-  const dur = Math.max(400, Math.min(1600, delta * 18));
-  _loaderPct = ratio;
-  _ldrSetHeight(targetPct, dur);
+  _fetchRatio = Math.min(1, Math.max(0, ratio));
+  _loaderPct  = _fetchRatio;
 }
-
 function _loaderFinish() {
-  if (_ldrFinished) return;
-  _ldrFinished = true;
-  // Final push to 100% with a smooth 900ms ease
-  _ldrSetHeight(100, 900);
-  // Fade out after fill completes
-  setTimeout(() => {
-    const l = document.getElementById('loader');
-    if (l) { l.classList.add('out'); setTimeout(() => l.style.display = 'none', 900); }
-  }, 1000);
+  _fetchRatio = 1.0;
+}
+// ═══════════════════════════════════════════════════════════
+
+
+
+// ── Bird image helper ────────────────────────────────────────
+const BIRD_IMG_EXT = {
+  'a_alba':         'PNG',
+  'l_philippensis': 'PNG',
+  'a_speciosa':     'JPEG',
+  'c_troglodytes':  'JPEG',
+  'p_goiavier':     'JPEG'
+};
+function _birdImgFile(sp) {
+  if (!sp || sp === 'Unknown') return null;
+  const parts = sp.split(' ');
+  const g = parts[0][0].toLowerCase();
+  const epithet = parts[1] ? parts[1].toLowerCase() : null;
+  // sp-only entries: filename is just the genus letter
+  if (!epithet || epithet === 'sp.') return g + '.jpg';
+  const key = g + '_' + epithet;
+  const ext = BIRD_IMG_EXT[key] || 'jpg';
+  return key + '.' + ext;
+}
+function _birdImgTag(sp) {
+  var f = _birdImgFile(sp);
+  if (!f) return '';
+  var s = 'width:100%;max-height:160px;object-fit:cover;border-radius:6px;margin:6px 0 4px;display:block';
+  return '<img src="' + f + '" alt="" style="' + s + '" onload="this.style.display=\'block\'" onerror="this.style.display=\'none\'">';
+}
+// ────────────────────────────────────────────────────────────
+
+// ── Bird species lookup (template literals avoid apostrophe issues) ──
+const BIRD_INFO = {
+  'Lanius cristatus':         { common:'Brown Shrike',                         order:'Passeriformes',    family:'Laniidae',        genus:'Lanius',        desc:`A migratory shrike from East Asia, common in urban gardens and parks during the northern winter. Perches prominently to hunt insects, lizards, and small birds, often impaling prey on thorns or wire.` },
+  'Aplonis panayensis':       { common:'Asian Glossy Starling',                order:'Passeriformes',    family:'Sturnidae',       genus:'Aplonis',       desc:`A highly gregarious starling with iridescent green-black plumage and bright red eyes. Forms large noisy flocks in fruiting trees and is one of the most abundant urban birds in the Philippines.` },
+  'Oriolus chinensis':        { common:'Black-naped Oriole',                   order:'Passeriformes',    family:'Oriolidae',       genus:'Oriolus',       desc:`A striking yellow-and-black oriole with a loud, fluty call. Found in forest edges, parks, and tree-lined streets. Feeds on fruit and insects in the canopy.` },
+  'Cinnyris jugularis':       { common:'Olive-backed Sunbird',                 order:'Passeriformes',    family:'Nectariniidae',   genus:'Cinnyris',      desc:`A tiny, energetic nectarivore with a curved bill. The male has a brilliant yellow underside and metallic olive back. Pollinates flowers while feeding and is one of the most common birds in Philippine urban gardens.` },
+  'Passer montanus':          { common:'Eurasian Tree Sparrow (Maya)',          order:'Passeriformes',    family:'Passeridae',      genus:'Passer',        desc:`The beloved Maya of the Philippines — a small, social sparrow found wherever there are humans. Nests in building crevices and feeds on seeds and scraps. A synanthrope that thrives in human-altered environments.` },
+  'Egretta garzetta':         { common:'Little Egret',                         order:'Pelecaniformes',   family:'Ardeidae',        genus:'Egretta',       desc:`A small, elegant white heron found along waterways, drainage channels, and open grasslands. Uses its yellow feet to stir up prey in shallow water. An indicator of wetland health in urban areas.` },
+  'Motacilla tschutschensis': { common:'Eastern Yellow Wagtail',               order:'Passeriformes',    family:'Motacillidae',    genus:'Motacilla',     desc:`A slender migratory wagtail that bobs its tail continuously while walking. Visits open grassy areas and wetlands during the northern winter migration.` },
+  'Motacilla cinerea':        { common:'Grey Wagtail',                         order:'Passeriformes',    family:'Motacillidae',    genus:'Motacilla',     desc:`A slim, active wagtail with grey upperparts and a bright yellow vent. Often seen along fast-moving streams, drainage channels, and paved areas near water.` },
+  'Columba livia':            { common:'Rock Pigeon',                          order:'Columbiformes',    family:'Columbidae',      genus:'Columba',       desc:`The classic urban pigeon, descended from cliff-dwelling ancestors. Now one of the most widespread birds in the world. Nests on buildings and feeds on seeds and scraps in open plazas and streets.` },
+  'Corvus sp.':               { common:'Crow (unidentified sp.)',               order:'Passeriformes',    family:'Corvidae',        genus:'Corvus',        desc:`A highly intelligent and adaptable corvid. Crows are omnivores that thrive in urban environments, feeding on refuse, carrion, and small animals. Their presence often indicates food availability.` },
+  'Pycnonotus goiavier':      { common:'Yellow-vented Bulbul',                 order:'Passeriformes',    family:'Pycnonotidae',    genus:'Pycnonotus',    desc:`One of the most common and vocal birds in Philippine cities. Identified by its bright yellow vent and cheerful chattering call. A habitat generalist that nests in gardens and feeds on fruit, nectar, and insects.` },
+  'Loriculus philippensis':   { common:'Colasisi (Philippine Hanging Parrot)', order:'Psittaciformes',   family:'Psittacidae',     genus:'Loriculus',     desc:`A tiny, brilliant green Philippine endemic parrot that sleeps hanging upside down like a bat. Feeds on nectar, pollen, and soft fruit. A key pollinator and seed disperser in urban green spaces.` },
+  'Geopelia striata':         { common:'Zebra Dove',                           order:'Columbiformes',    family:'Columbidae',      genus:'Geopelia',      desc:`A small, gentle dove with fine black-and-white barring on the chest. Common in gardens, parks, and open areas. Often seen walking on the ground picking up seeds.` },
+  'Collocalia marginata':     { common:'Philippine Swiftlet',                  order:'Apodiformes',      family:'Apodidae',        genus:'Collocalia',    desc:`A small, fast-flying aerial insectivore that spends most of its life on the wing. Uses echolocation to navigate inside dark caves and buildings where it nests. An endemic Philippine species.` },
+  'Collocalia troglodytes':   { common:'Pygmy Swiftlet',                       order:'Apodiformes',      family:'Apodidae',        genus:'Collocalia',    desc:`One of the smallest swiftlets in the world, endemic to the Philippines. Constantly aerial, catching insects in flight. Nests inside dark spaces and caves.` },
+  'Aerodramus amelis':        { common:'Palawan Swiftlet',                     order:'Apodiformes',      family:'Apodidae',        genus:'Aerodramus',    desc:`A swiftlet species found in the Philippines that navigates using echolocation. Forages aerially for flying insects and contributes to insect population control in urban areas.` },
+  'Yungipicus maculatus':     { common:'Philippine Woodpecker',                order:'Piciformes',       family:'Picidae',         genus:'Yungipicus',    desc:`A small Philippine endemic woodpecker with spotted brown plumage. Excavates insects from tree bark and branches, making it an important controller of wood-boring insects in urban trees.` },
+  'Butorides striata':        { common:'Striated Heron',                       order:'Pelecaniformes',   family:'Ardeidae',        genus:'Butorides',     desc:`A small, stocky heron that hunts alone in dense vegetation near water. Known to use bait — dropping small objects into water to attract fish. Found along drainage channels and ponds.` },
+  'Zosterops meyeni':         { common:'Lowland White-eye',                    order:'Passeriformes',    family:'Zosteropidae',    genus:'Zosterops',     desc:`A tiny, sociable bird named for its distinctive white eye-ring. Travels in flocks through flowering and fruiting trees, feeding on nectar and small insects. A Philippine endemic.` },
+  'Psilopogon haemacephalus': { common:'Coppersmith Barbet',                   order:'Piciformes',       family:'Megalaimidae',    genus:'Psilopogon',    desc:`Named for its repetitive metallic call — like a coppersmith hammering metal. A brightly coloured frugivore that excavates nest holes in dead branches. Its presence signals good tree canopy cover.` },
+  'Nycticorax nycticorax':    { common:'Black-crowned Night Heron',            order:'Pelecaniformes',   family:'Ardeidae',        genus:'Nycticorax',    desc:`A stocky, nocturnal heron with a black crown and back, white underparts, and red eyes. Roosts in trees by day and hunts fish and invertebrates along waterways at night.` },
+  'Nycticorax caledonicus':   { common:'Nankeen Night Heron',                  order:'Pelecaniformes',   family:'Ardeidae',        genus:'Nycticorax',    desc:`A russet-brown night heron that forages at dusk and dawn near wetlands and drainage channels. Less commonly seen than the black-crowned night heron but uses similar habitats.` },
+  'Treron vernans':           { common:'Pink-necked Green Pigeon',             order:'Columbiformes',    family:'Columbidae',      genus:'Treron',        desc:`A beautifully coloured frugivorous pigeon with a pink-and-orange neck on the male. Found in forest edges and fruiting trees. An important seed disperser for figs and other urban trees.` },
+  'Spilopelia chinensis':     { common:'Spotted Dove',                         order:'Columbiformes',    family:'Columbidae',      genus:'Spilopelia',    desc:`A medium-sized dove with a distinctive black-and-white spotted collar patch. Common in open areas, gardens, and roadsides. Feeds mainly on seeds picked from the ground.` },
+  'Sarcops calvus':           { common:'Coleto',                               order:'Passeriformes',    family:'Sturnidae',       genus:'Sarcops',       desc:`A striking Philippine endemic myna with a naked red-orange face and black-and-white body. Found in forest edges and fruiting trees. Its bald face is unique among Philippine birds.` },
+  'Rhipidura nigritorquis':   { common:'Philippine Pied Fantail (Maria Cafra)',order:'Passeriformes',    family:'Rhipiduridae',    genus:'Rhipidura',     desc:`The familiar Maria Cafra of Philippine gardens — a small, energetic fantail that fans its long tail and flits through low vegetation catching insects. Highly adaptive to urban environments.` },
+  'Chlidonias hybrida':       { common:'Whiskered Tern',                       order:'Charadriiformes',  family:'Laridae',         genus:'Chlidonias',    desc:`A graceful marsh tern that dips to the water surface to catch small fish and invertebrates. Found near open water bodies, reservoirs, and flooded areas. A migratory visitor.` },
+  'Todiramphus chloris':      { common:'Collared Kingfisher',                  order:'Coraciiformes',    family:'Alcedinidae',     genus:'Todiramphus',   desc:`A large, bold kingfisher with turquoise upperparts and a white collar. Unlike most kingfishers, it is equally at home far from water, hunting lizards and large insects in gardens and parks.` },
+  'Alcedo atthis':            { common:'Common Kingfisher',                    order:'Coraciiformes',    family:'Alcedinidae',     genus:'Alcedo',        desc:`A jewel-bright, darting kingfisher with electric blue upperparts and orange underparts. Dives headfirst into water to catch small fish. Its presence indicates clean, accessible waterways — a key ecological health indicator.` },
+  'Halcyon gularis':          { common:'Philippine Kingfisher',                order:'Coraciiformes',    family:'Alcedinidae',     genus:'Halcyon',       desc:`A Philippine endemic kingfisher with a chestnut head, blue back, and red bill. Found near water and in forest edges. Less commonly seen than the collared kingfisher.` },
+  'Amaurornis phoenicurus':   { common:'White-breasted Waterhen',              order:'Gruiformes',       family:'Rallidae',        genus:'Amaurornis',    desc:`A boldly-patterned rail with a white face and breast and rusty-red vent. Surprisingly comfortable in urban areas, walking along drainage channels, roadsides, and gardens in search of invertebrates.` },
+  'Dicaeum australe':         { common:'Philippine Flowerpecker',              order:'Passeriformes',    family:'Dicaeidae',       genus:'Dicaeum',       desc:`A tiny Philippine endemic flowerpecker that feeds on mistletoe berries and nectar. Plays a critical role in dispersing mistletoe seeds, which in turn support other wildlife in the canopy.` },
+  'Lonchura atricapilla':     { common:'Chestnut Munia',                       order:'Passeriformes',    family:'Estrildidae',     genus:'Lonchura',      desc:`A small, sociable seedeater with a rich chestnut body and black head. Found in open grassy areas, rice fields, and garden edges. Often seen in tight flocks picking seeds from grass stems.` },
+  'Lonchura punctulata':      { common:'Scaly-breasted Munia',                 order:'Passeriformes',    family:'Estrildidae',     genus:'Lonchura',      desc:`A small munia with intricate brown-and-white scalloped underparts. Common in grasslands, gardens, and crop fields. Highly social and often found alongside other munia species.` },
+  'Lonchura oryzivora':       { common:'Java Sparrow',                         order:'Passeriformes',    family:'Estrildidae',     genus:'Lonchura',      desc:`A striking finch with grey plumage, a pink bill, and white cheek patches. Native to Java and Bali, now established globally as an escaped cage bird. Feeds on seeds in open areas.` },
+  'Artamus leucorhynchos':    { common:'White-breasted Woodswallow',           order:'Passeriformes',    family:'Artamidae',       genus:'Artamus',       desc:`A compact, aerial insectivore with a white breast and grey back. Often seen perched on wires in small groups, launching out to catch flying insects. Tolerates open and disturbed habitats well.` },
+  'Lalage nigra':             { common:'Pied Triller',                         order:'Passeriformes',    family:'Campephagidae',   genus:'Lalage',        desc:`A small black-and-white bird found in forest edges, gardens, and secondary growth. Feeds on insects caught in foliage or on the wing. The male has a striking pied pattern.` },
+  'Gallus gallus':            { common:'Red Junglefowl',                       order:'Galliformes',      family:'Phasianidae',     genus:'Gallus',        desc:`The wild ancestor of the domestic chicken. Found in secondary forest edges and overgrown areas near human habitation. Males have brilliant red and gold plumage and crow loudly at dawn.` },
+  'Pavo cristatus':           { common:'Indian Peafowl',                       order:'Galliformes',      family:'Phasianidae',     genus:'Pavo',          desc:`The peacock — introduced or escaped. Males display spectacular iridescent blue-green tail fans. Likely represents escaped or feral individuals in the study area rather than an established wild population.` },
+  'Hirundo javanica':         { common:'Pacific Swallow',                      order:'Passeriformes',    family:'Hirundinidae',    genus:'Hirundo',       desc:`A small, fast-flying aerial insectivore with a rusty-red throat and forked tail. One of the most abundant swallows in Southeast Asia. Nests on buildings and bridges and forages over open areas.` },
+  'Hirundo rustica':          { common:'Barn Swallow',                         order:'Passeriformes',    family:'Hirundinidae',    genus:'Hirundo',       desc:`The iconic migratory swallow, wintering in the Philippines from northern Asia. Gathers in huge pre-roost flocks over reedbed and open water. Arrives each October and departs in April.` },
+  'Cecropis daurica':         { common:'Red-rumped Swallow',                   order:'Passeriformes',    family:'Hirundinidae',    genus:'Cecropis',      desc:`A sleek swallow distinguished by its rusty-red rump patch. A migratory visitor that forages aerially over open areas, often mixing with other swallow species.` },
+  'Monticola solitarius':     { common:'Blue Rock Thrush',                     order:'Passeriformes',    family:'Muscicapidae',    genus:'Monticola',     desc:`A solitary, blue-grey thrush that perches conspicuously on rocks, rooftops, and high structures. A migratory visitor from northern Asia that winters in the Philippines.` },
+  'Ardea alba':               { common:'Great Egret',                          order:'Pelecaniformes',   family:'Ardeidae',        genus:'Ardea',         desc:`A large, elegant all-white heron standing nearly a metre tall. Found near open water bodies, drainage channels, and flooded areas. An iconic symbol of wetland ecosystems.` },
+  'Ardea sp.':                { common:'Heron (unidentified sp.)',             order:'Pelecaniformes',   family:'Ardeidae',        genus:'Ardea',         desc:`A large heron of unconfirmed species. Ardeids are key indicators of water quality and aquatic food web health in urban environments.` },
+  'Botaurus sp.':             { common:'Bittern (unidentified sp.)',           order:'Pelecaniformes',   family:'Ardeidae',        genus:'Botaurus',      desc:`A secretive, cryptically-patterned bittern that freezes with its bill pointed skyward when alarmed. Found in dense reeds and marshy areas near water. Rarely observed due to its camouflage.` },
+  'Gerygone sulphurea':       { common:'Golden-bellied Gerygone',              order:'Passeriformes',    family:'Acanthizidae',    genus:'Gerygone',      desc:`A tiny, energetic warbler with a bright yellow belly. Found in forest edges, mangroves, and gardens. Despite its small size, its sweet, descending song is one of the most recognised sounds in Philippine urban green spaces.` },
+  'Copsychus mindanensis':    { common:'Philippine Magpie-Robin',              order:'Passeriformes',    family:'Muscicapidae',    genus:'Copsychus',     desc:`A bold, black-and-white songbird known for its rich, melodious song. Found in forest edges, gardens, and parks where it feeds on insects on the ground. A Philippine endemic.` },
+  'Acridotheres cristatellus':{ common:'Crested Myna',                         order:'Passeriformes',    family:'Sturnidae',       genus:'Acridotheres',  desc:`An introduced myna with a distinctive frontal crest. Highly intelligent and adaptable, it thrives in urban environments, feeding on insects, fruit, and refuse. Can mimic other sounds.` },
+  'Gallirallus torquatus':    { common:'Barred Rail',                          order:'Gruiformes',       family:'Rallidae',        genus:'Gallirallus',   desc:`A secretive, ground-dwelling rail with striking black-and-white barring. Found in dense grass, marshes, and overgrown areas near water. Rarely seen but detected by its sharp, repetitive calls.` },
+  'Falco peregrinus':         { common:'Peregrine Falcon',                     order:'Falconiformes',    family:'Falconidae',      genus:'Falco',         desc:`The fastest animal on Earth, reaching over 320 km/h in a stoop. A migratory visitor that uses tall urban buildings as hunting perches. Preys on other birds mid-flight.` },
+  'Otus megalotis':           { common:'Philippine Scops Owl',                 order:'Strigiformes',     family:'Strigidae',       genus:'Otus',          desc:`A small nocturnal owl endemic to the Philippines with prominent ear tufts. Found in forest edges, mature gardens, and parks with large trees. Its presence indicates a healthy arthropod community.` },
+  'Agropsar philippensis':    { common:'Chestnut-cheeked Starling',            order:'Passeriformes',    family:'Sturnidae',       genus:'Agropsar',      desc:`A migratory starling with chestnut cheek patches on the male. Winters in the Philippines from Japan and northeastern Asia. Found in forest edges and fruiting trees.` },
+  'Caprimulgus manillensis':  { common:'Philippine Nightjar',                  order:'Caprimulgiformes', family:'Caprimulgidae',   genus:'Caprimulgus',   desc:`A nocturnal, cryptically-patterned bird that hunts moths and beetles at night. Roosts on the ground by day, relying on its camouflage to avoid detection. An endemic Philippine species.` },
+  'Merops philippinus':       { common:'Blue-tailed Bee-eater',                order:'Coraciiformes',    family:'Meropidae',       genus:'Merops',        desc:`A brilliantly-coloured bee-eater that catches bees, wasps, and dragonflies in the air, beating them against a perch to remove the sting before eating. Found near open water and forest edges.` },
+  'Spilornis holospilus':     { common:'Philippine Serpent Eagle',             order:'Accipitriformes',  family:'Accipitridae',    genus:'Spilornis',     desc:`A medium-sized endemic raptor that specialises in hunting snakes and lizards. Found in forest edges and mature tree canopy. Its presence signals significant ecological depth in the local green cover.` },
+  'Pandion haliaetus':        { common:'Osprey',                               order:'Accipitriformes',  family:'Pandionidae',     genus:'Pandion',       desc:`A fish-eating raptor that dives feet-first into water to catch fish. A migratory visitor to the Philippines. Its presence near the study area indicates nearby water bodies with healthy fish populations.` },
+  'Ardeola speciosa':         { common:'Javan Pond Heron',                     order:'Pelecaniformes',   family:'Ardeidae',        genus:'Ardeola',       desc:`A small, stocky heron that hunts in shallow water and marshy areas. Reveals striking white wings when it flies. A migrant to the Philippines found near wetlands and drainage channels.` },
+  'Egretta intermedia':       { common:'Intermediate Egret',                   order:'Pelecaniformes',   family:'Ardeidae',        genus:'Egretta',       desc:`A medium-sized white egret intermediate in size between the little and great egret. Found near wetlands, drainage channels, and flooded grasslands. Distinguished by its yellow bill.` },
+  'Phylloscopus borealis':    { common:'Arctic Warbler',                       order:'Passeriformes',    family:'Phylloscopidae',  genus:'Phylloscopus',  desc:`A small, active migratory warbler that winters in Southeast Asia. Actively forages for insects in tree foliage. One of the longest-distance migrants in the bird world.` },
+  'Periparus elegans':        { common:'Elegant Tit',                          order:'Passeriformes',    family:'Paridae',         genus:'Periparus',     desc:`A small, striking Philippine endemic tit with black-and-yellow plumage. Found in forest canopy and edges. Energetically forages for insects in foliage, often in mixed-species flocks.` },
+  'Megalurus palustris':      { common:'Striated Grassbird',                   order:'Passeriformes',    family:'Locustellidae',   genus:'Megalurus',     desc:`A large, streaky grassbird found in tall grass, reeds, and marshy areas. Its rich, bubbling song is often heard but the bird itself stays low in dense vegetation, remaining elusive.` },
+  'Orthotomus derbianus':     { common:'Grey-backed Tailorbird',               order:'Passeriformes',    family:'Cisticolidae',    genus:'Orthotomus',    desc:`A Philippine endemic tailorbird that stitches leaves together with plant fibres to form its nest. Found in dense undergrowth in gardens and forest edges. Identified by its rufous head and grey back.` },
+  'Probosciger aterrimus':    { common:'Palm Cockatoo',                        order:'Psittaciformes',   family:'Psittacidae',     genus:'Probosciger',   desc:`A massive black cockatoo native to New Guinea and northern Australia. Any sighting in Metro Manila represents an escaped or released cage bird. Listed as Vulnerable due to the pet trade.` },
+  'Cacatua alba':             { common:'White Cockatoo',                       order:'Psittaciformes',   family:'Psittacidae',     genus:'Cacatua',       desc:`The white or umbrella cockatoo, native to Maluku Islands, Indonesia. Sightings in Metro Manila are escaped or feral individuals. Listed as Vulnerable due to heavy collection for the cage bird trade.` },
+  'Bolbopsittacus lunulatus': { common:'Guaiabero',                            order:'Psittaciformes',   family:'Psittacidae',     genus:'Bolbopsittacus',desc:`A small, compact Philippine endemic parrot named for its love of guava fruit. Its bright green and blue plumage and stocky build make it unmistakable. Rarely observed in urban areas.` },
+  'Psittacula krameri':       { common:'Rose-ringed Parakeet',                 order:'Psittaciformes',   family:'Psittacidae',     genus:'Psittacula',    desc:`An introduced parakeet native to Africa and South Asia, now established globally as an escaped cage bird. Loud and gregarious, forms feral flocks in cities. Competes with native hollow-nesting species.` },
+  'Numida meleagris':         { common:'Helmeted Guineafowl',                  order:'Galliformes',      family:'Numididae',       genus:'Numida',        desc:`A large, spotted African gamebird with a distinctive bony casque on its head. Any sighting in Metro Manila represents an escaped or feral farm or garden bird.` },
+  'Actitis hypoleucos':       { common:'Common Sandpiper',                     order:'Charadriiformes',  family:'Scolopacidae',    genus:'Actitis',       desc:`A small, tail-bobbing wader that teeters constantly as it walks. Found along the edges of drainage channels, ponds, and rivers. A migratory visitor from the northern hemisphere.` },
+  'Eudynamys scolopaceus':    { common:'Asian Koel',                           order:'Cuculiformes',     family:'Cuculidae',       genus:'Eudynamys',     desc:`A brood-parasitic cuckoo famous for the rising, repetitive call of the male. Lays its eggs in crow nests. The female is brown and spotted; the male is all black.` },
+  'Gracula religiosa':        { common:'Hill Myna',                            order:'Passeriformes',    family:'Sturnidae',       genus:'Gracula',       desc:`A large, glossy black myna with yellow wattles and an extraordinary ability to mimic human speech. Any Metro Manila sightings likely represent escaped cage birds.` },
+  'Ardea cinerea':            { common:'Grey Heron',                           order:'Pelecaniformes',   family:'Ardeidae',        genus:'Ardea',         desc:`A large, grey heron standing nearly a metre tall. A migratory visitor in small numbers to the Philippines. Found near open water, drainage channels, and flooded areas.` },
+  'Ducula carola':            { common:'Spotted Imperial Pigeon',              order:'Columbiformes',    family:'Columbidae',      genus:'Ducula',        desc:`A large Philippine endemic imperial pigeon with spotted underparts. A frugivore of forest canopy that disperses large seeds. Its presence in an urban area indicates significant nearby tree cover.` },
+  'Butastur indicus':         { common:'Grey-faced Buzzard',                   order:'Accipitriformes',  family:'Accipitridae',    genus:'Butastur',      desc:`A migratory hawk that passes through the Philippines in large numbers during autumn. Found in open country and forest edges. Feeds on lizards, frogs, and large insects.` },
+  'Falco tinnunculus':        { common:'Common Kestrel',                       order:'Falconiformes',    family:'Falconidae',      genus:'Falco',         desc:`A small, hovering falcon that hunts rodents and large insects. Hovers in place using headwinds — a distinctive behaviour. A migratory visitor to the Philippines from northern Asia.` },
+  'Rallina eurizonoides':     { common:'Slaty-legged Crake',                   order:'Gruiformes',       family:'Rallidae',        genus:'Rallina',       desc:`A secretive crake with chestnut upperparts and barred underparts. Found in dense undergrowth near wetlands and streams. Extremely elusive; more often heard than seen. A migratory visitor.` },
+  'Lanius schach':            { common:'Long-tailed Shrike',                   order:'Passeriformes',    family:'Laniidae',        genus:'Lanius',        desc:`A large, aggressive shrike with a long graduated tail. Hunts insects, lizards, and small birds from exposed perches. Found in open areas, gardens, and scrubland.` },
+};
+
+// ── Bird layer functions ──────────────────────────────────────
+let _birdsVisible = false;
+
+function toggleBirds(on) {
+  _birdsVisible = on;
+  if (!map.getSource('src-birds')) {
+    if (on) _loadBirdsLayer();
+    return;
+  }
+  map.setLayoutProperty('lyr-birds',     'visibility', on ? 'visible' : 'none');
+  map.setLayoutProperty('lyr-birds-hit', 'visibility', on ? 'visible' : 'none');
 }
 
-// Initial "breathing" surge on page load — shows immediately
-// so the bar is already visibly started before data arrives
-setTimeout(() => _ldrSetHeight(8, 1400), 0);
-setTimeout(() => _ldrSetHeight(14, 1000), 1600);
-// ═══════════════════════════════════════════════════════════════
+function _loadBirdsLayer() {
+  fetch('birds.geojson')
+    .then(r => r.json())
+    .then(data => {
+      if (!map.getSource('src-birds')) {
+        map.addSource('src-birds', { type: 'geojson', data: data, generateId: true });
+      }
+      map.addLayer({
+        id: 'lyr-birds',
+        type: 'circle',
+        source: 'src-birds',
+        paint: {
+          'circle-radius': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 10,
+            ['boolean', ['feature-state', 'hover'],    false],  9,
+            7
+          ],
+          'circle-color': '#efeb8b',
+          'circle-stroke-color': '#948c40',
+          'circle-stroke-width': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 2.5,
+            ['boolean', ['feature-state', 'hover'],    false], 2,
+            1.5
+          ],
+          'circle-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 0.9,
+            ['boolean', ['feature-state', 'hover'],    false], 0.78,
+            0.65
+          ]
+        }
+      });
+      map.addLayer({
+        id: 'lyr-birds-hit',
+        type: 'circle',
+        source: 'src-birds',
+        paint: {
+          'circle-radius': 16,
+          'circle-color': 'rgba(0,0,0,0)',
+          'circle-stroke-width': 0
+        }
+      });
+      // Always keep birds on top
+      map.moveLayer('lyr-birds');
+      map.moveLayer('lyr-birds-hit');
+      let _hovBirdId = null;
+      map.on('mousemove', 'lyr-birds', (e) => {
+        if (!e.features.length) return;
+        map.getCanvas().style.cursor = 'pointer';
+        const id = e.features[0].id;
+        if (_hovBirdId !== null && _hovBirdId !== id)
+          map.setFeatureState({ source: 'src-birds', id: _hovBirdId }, { hover: false });
+        _hovBirdId = id;
+        map.setFeatureState({ source: 'src-birds', id: id }, { hover: true });
+      });
+      map.on('mouseleave', 'lyr-birds', () => {
+        map.getCanvas().style.cursor = '';
+        if (_hovBirdId !== null)
+          map.setFeatureState({ source: 'src-birds', id: _hovBirdId }, { hover: false });
+        _hovBirdId = null;
+      });
 
+      let _selBirdId = null;
+      map.on('click', 'lyr-birds-hit', (e) => {
+        if (!e.features.length) return;
+        _birdClickConsumed = true; // prevent other layer click handlers from firing
+        // Clear previous selected
+        if (_selBirdId !== null)
+          map.setFeatureState({ source: 'src-birds', id: _selBirdId }, { selected: false });
+        _selBirdId = e.features[0].id;
+        map.setFeatureState({ source: 'src-birds', id: _selBirdId }, { selected: true });
+        // Query all bird features within a small pixel radius
+        const pt = e.point;
+        const bbox = [[pt.x-8, pt.y-8],[pt.x+8, pt.y+8]];
+        const nearby = map.queryRenderedFeatures(bbox, { layers: ['lyr-birds-hit'] });
+        // Deduplicate by species
+        const seen = new Set();
+        const uniq = nearby.filter(f => {
+          const k = (f.properties.species || f.properties.genus || '') + '|' + (f.properties.gbifID || '');
+          if (seen.has(k)) return false;
+          seen.add(k); return true;
+        });
+        if (uniq.length > 1) _showMultiBirdPanel(uniq.map(f => f.properties));
+        else {
+          // Count all records of this species in the bbox (may be > 1)
+          const thisSp = uniq[0].properties.species || uniq[0].properties.genus || '';
+          const spCount = nearby.filter(f => (f.properties.species || f.properties.genus || '') === thisSp).length;
+          _showBirdPanel(uniq[0].properties, spCount);
+        }
+        S.locked = true;
+      });
+      map.on('mousemove', 'lyr-birds-hit', (e) => {
+        if (S.locked || !e.features.length) return;
+        const pt = e.point;
+        const bbox = [[pt.x-8, pt.y-8],[pt.x+8, pt.y+8]];
+        const nearby = map.queryRenderedFeatures(bbox, { layers: ['lyr-birds-hit'] });
+        const seen = new Set(); const uniq = nearby.filter(f => {
+          const k = (f.properties.species || '') + '|' + (f.properties.gbifID || '');
+          if (seen.has(k)) return false; seen.add(k); return true;
+        });
+        if (uniq.length > 1) _showMultiBirdPanel(uniq.map(f => f.properties));
+        else {
+          // Count all records of this species in the bbox (may be > 1)
+          const thisSp = uniq[0].properties.species || uniq[0].properties.genus || '';
+          const spCount = nearby.filter(f => (f.properties.species || f.properties.genus || '') === thisSp).length;
+          _showBirdPanel(uniq[0].properties, spCount);
+        }
+      });
+    })
+    .catch(err => console.warn('[birds] Failed to load birds.geojson:', err));
+}
+
+function _showBirdPanel(props, count) {
+  const sp     = props.species || (props.genus ? props.genus + ' sp.' : 'Unknown');
+  const info   = BIRD_INFO[sp] || {};
+  const common = info.common || props.common_name || sp;
+  const order  = info.order  || props.order  || '—';
+  const family = info.family || props.family || '—';
+  const genus  = info.genus  || props.genus  || '—';
+  const desc   = info.desc   || 'No description available.';
+
+  const rp = document.getElementById('rp');
+  if (rp) rp.classList.remove('offscreen');
+
+  const badge = document.getElementById('rp-badge');
+  if (badge) { badge.textContent = '🐦 Bird Sighting'; badge.style.display = 'inline-block'; }
+
+  const nameEl = document.getElementById('rp-name');
+  if (nameEl) { nameEl.textContent = common; nameEl.style.display = 'block'; }
+
+  const body = document.getElementById('rp-body');
+  if (!body) return;
+  const imgTag = _birdImgTag(sp);
+  body.innerHTML =
+    '<div style="padding:8px 11px 0">' + imgTag + '</div>' +
+    '<div class="def-box" style="margin-bottom:10px">' +
+      '<div class="def-title" style="font-style:italic;font-size:.9rem;color:#555;margin-bottom:6px">' + sp + '</div>' +
+      '<div style="font-size:.78rem;color:var(--tx2);line-height:1.6">' + desc + '</div>' +
+    '</div>' +
+    '<div style="padding:6px 11px 8px;font-size:.76rem;line-height:1.9;color:var(--tx2)">' +
+      '<span style="color:var(--tx);font-weight:600">Order</span> &nbsp;' + order + '<br>' +
+      '<span style="color:var(--tx);font-weight:600">Family</span> &nbsp;' + family + '<br>' +
+      '<span style="color:var(--tx);font-weight:600">Genus</span> &nbsp;<em>' + genus + '</em><br>' +
+      '<span style="color:var(--tx);font-weight:600">Records</span> &nbsp;' + (count || 1) +
+    '</div>';
+}
+
+function _showMultiBirdPanel(propsList) {
+  const rp = document.getElementById('rp');
+  if (rp) rp.classList.remove('offscreen');
+
+  // Deduplicate by scientific name first so counts are accurate
+  const bySpecies = {};
+  propsList.forEach(p => {
+    const sp = p.species || (p.genus ? p.genus + ' sp.' : 'Unknown');
+    if (!bySpecies[sp]) bySpecies[sp] = { count: 0, props: p };
+    bySpecies[sp].count++;
+  });
+  const spCount  = Object.keys(bySpecies).length;
+  const recCount = propsList.length;
+
+  const badge = document.getElementById('rp-badge');
+  if (badge) { badge.textContent = '🐦 Bird Sightings'; badge.style.display = 'inline-block'; }
+  const nameEl = document.getElementById('rp-name');
+  if (nameEl) {
+    nameEl.textContent = spCount + (spCount === 1 ? ' species' : ' species') + ' · ' + recCount + ' record' + (recCount === 1 ? '' : 's');
+    nameEl.style.display = 'block';
+  }
+  const body = document.getElementById('rp-body');
+  if (!body) return;
+
+  let html = '';
+  Object.entries(bySpecies).forEach(([sp, entry], i) => {
+    const info   = BIRD_INFO[sp] || {};
+    const common = info.common || entry.props.common_name || sp;
+    const order  = info.order  || entry.props.order  || '—';
+    const family = info.family || entry.props.family || '—';
+    const genus  = info.genus  || entry.props.genus  || '—';
+    const desc   = info.desc   || '';
+    const border = i > 0 ? 'border-top:1px solid var(--border);margin-top:10px;padding-top:10px' : '';
+    const mImgTag = _birdImgTag(sp);
+    html +=
+      '<div style="' + border + '">' +
+        mImgTag +
+        '<div style="font-weight:700;font-size:.85rem;color:var(--tx);margin-bottom:1px">' + common + '</div>' +
+        '<div style="font-style:italic;font-size:.78rem;color:#666;margin-bottom:4px">' + sp + '</div>' +
+        (desc ? '<div style="font-size:.75rem;color:var(--tx2);line-height:1.55;margin-bottom:5px">' + desc + '</div>' : '') +
+        '<div style="font-size:.74rem;color:var(--tx2);line-height:1.9">' +
+          '<span style="color:var(--tx);font-weight:600">Order</span> &nbsp;' + order + '<br>' +
+          '<span style="color:var(--tx);font-weight:600">Family</span> &nbsp;' + family + '<br>' +
+          '<span style="color:var(--tx);font-weight:600">Genus</span> &nbsp;<em>' + genus + '</em><br>' +
+          '<span style="color:var(--tx);font-weight:600">Records</span> &nbsp;' + entry.count +
+        '</div>' +
+      '</div>';
+  });
+  body.innerHTML = '<div style="padding:8px 11px">' + html + '</div>';
+}
+
+// ─────────────────────────────────────────────────────────────
+
+
+function _bringTopLayers() {
+  ['lyr-core-fill','lyr-core-line','lyr-core-label-circle','lyr-core-labels',
+   'lyr-birds','lyr-birds-hit'].forEach(function(id) {
+    if (map.getLayer(id)) map.moveLayer(id);
+  });
+}
 
 map.on('load', async () => {
   setMsg('Fetching GeoJSON...');
@@ -1166,6 +1454,7 @@ function clearBrgyHover() {
   att('lyr-brgy-fill','src-brgy', f => { const p=f.properties||{}; const city=matchCity(p.Mun_City||p.City||''); return {badge:'Barangay',name:nm(p,'Barangay'),tipSub:'Click to view statistics',rfn:locked=>rBrgy(p,locked,city)}; });
   // Zoom to clicked barangay in barangay scale
   map.on('click','lyr-brgy-fill', e => {
+    if (_birdClickConsumed) { _birdClickConsumed = false; return; }
     if (S.scale !== 'barangay-scale') return;
     if (!e.features?.length) return;
     const clicked = e.features[0];
@@ -1264,9 +1553,10 @@ function clearBrgyHover() {
   });
 
   buildHexBtns(); buildBrgyDD(); applyScale('barangay-scale');
-  setLoaderProgress(1.0);   // all GeoJSON done
+  _bringTopLayers();
+  setLoaderProgress(0.95);
   map.once('idle', () => _loaderFinish());
-  setTimeout(() => { if (!_ldrFinished) _loaderFinish(); }, 5000);
+  setTimeout(() => { if (!_loaderFinished) _loaderFinish(); }, 5000);
   // Keep scale bar hidden until enterMap
   const _scCtrl=document.querySelector('.maplibregl-ctrl-bottom-right');
   if(_scCtrl && homeVisible) _scCtrl.classList.add('offscreen');
@@ -1535,11 +1825,13 @@ function clrH() {
   if (S.hov.id!=null&&S.hov.src) try{map.setFeatureState({source:S.hov.src,id:S.hov.id},{hover:false});}catch(e){}
   S.hov={src:null,id:null};
 }
+let _birdClickConsumed = false;
+
 function att(layerId, srcId, infoFn) {
   map.on('mouseenter',layerId,()=>{map.getCanvas().style.cursor='pointer';});
   map.on('mouseleave',layerId,()=>{map.getCanvas().style.cursor='';clrH();if(!S.locked){hideTip();clearPanel();}});
   map.on('mousemove',layerId,e=>{if(!e.features?.length)return;const f=e.features[0];setH(srcId,f.id);const info=infoFn(f);showTip(e.point,info.name,info.tipSub);if(!S.locked)fillPanel(info,false);});
-  map.on('click',layerId,e=>{if(!e.features?.length)return;const f=e.features[0];if(S.locked&&S.sel.id===f.id&&S.sel.src===srcId){try{map.setFeatureState({source:srcId,id:f.id},{selected:false});}catch(e){}S.locked=false;S.sel={src:null,id:null};clearPanel();}else{if(S.sel.id!=null)try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(e){}S.locked=true;S.sel={src:srcId,id:f.id};try{map.setFeatureState({source:srcId,id:f.id},{selected:true});}catch(e){}fillPanel(infoFn(f),true);}e.preventDefault();});
+  map.on('click',layerId,e=>{if(_birdClickConsumed){_birdClickConsumed=false;return;}if(!e.features?.length)return;const f=e.features[0];if(S.locked&&S.sel.id===f.id&&S.sel.src===srcId){try{map.setFeatureState({source:srcId,id:f.id},{selected:false});}catch(e){}S.locked=false;S.sel={src:null,id:null};clearPanel();}else{if(S.sel.id!=null)try{map.setFeatureState({source:S.sel.src,id:S.sel.id},{selected:false});}catch(e){}S.locked=true;S.sel={src:srcId,id:f.id};try{map.setFeatureState({source:srcId,id:f.id},{selected:true});}catch(e){}fillPanel(infoFn(f),true);}e.preventDefault();});
 }
 
 // TOGGLES
@@ -1867,6 +2159,6 @@ function closeGuide() {
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeGuide(); });
 </script>
 
-<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="GeoCite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
+<a href="https://www.wtalabs.ph/geocite" target="_blank" id="geocite-overlay" class="offscreen"><img src="geocite.svg" alt="Geocite" onerror="this.style.display='none'"></a>
 </body>
 </html>
